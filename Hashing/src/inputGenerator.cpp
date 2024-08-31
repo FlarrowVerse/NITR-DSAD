@@ -9,6 +9,18 @@ using std::endl;
 using std::string;
 using std::ofstream;
 
+
+/**
+ * Function definitions
+ */
+int getASCII(); // random ascii character generator
+int getWordSize(); // random word size generator
+string getWord(int wordSize); // random word generator
+void writeToFile(string filecontent, string filename); // writing to file utility
+void generateInput(); // driver function
+
+
+
 /**
  * Returns the ASCII code of a printable character
  * ASCII range = [32, 126]
@@ -30,23 +42,20 @@ int getWordSize() {
 string getWord(int wordSize) {
     string word = "";
     for (int charCount = 0; charCount < wordSize; charCount++) {
-        word += (char)getASCII(); // getting a random ascii code and appending it to the file as string
-
-        // randomly deciding to add a forbidden character at the end of a word
-        if (rand() % 2)
-        {
-            switch (rand() % 3)
-            {
-            case 0:
-                word += ",";
-                break;
-            case 1:
-                word += ".";
-                break;
-            case 2:
-                word += " ";
-                break;
-            }
+        word += (char)getASCII(); // getting a random ascii code and appending it to the file as string        
+    }
+    // randomly deciding to add a forbidden character at the end of a word
+    if (rand() % 2) {
+        switch (rand() % 3) {
+        case 0:
+            word += ",";
+            break;
+        case 1:
+            word += ".";
+            break;
+        case 2:
+            word += " ";
+            break;
         }
     }
     return word;
@@ -55,9 +64,9 @@ string getWord(int wordSize) {
 /**
  * Given a string writes to a text file
  */
-void writeToFile(string fileContent) {
+void writeToFile(string fileContent, string filename) {
     // creating and opening file in write mode
-    ofstream file ("files/sampleFile.txt");
+    ofstream file ("files/"+filename);
 
     // writing to file
     file << fileContent;
@@ -68,7 +77,7 @@ void writeToFile(string fileContent) {
 /**
  * Main driver code
  */
-int main() {
+void generateInput() {
     srand(time(0)); // seeding the random number generator with current time stamp
 
     int wordCount;
@@ -83,7 +92,5 @@ int main() {
     }
 
     // cout << fileContent << endl; // just displaying for now
-    writeToFile(fileContent);
-
-    return 0;
+    writeToFile(fileContent, "sampleFile.txt");
 }

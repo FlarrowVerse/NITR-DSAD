@@ -1,18 +1,33 @@
-MAINPATH = $(dir)/src/$(prog).cpp
-OBJPATH = $(dir)/obj/$(prog).o
-EXEPATH = $(dir)/exe/$(prog).exe
+MAINPATH = $(dir)/src
+OBJPATH = $(dir)/obj/output.o
+EXEPATH = $(dir)/exe/output.exe
 
-$(EXEPATH): $(OBJPATH)
-	g++ $(OBJPATH) -o $(EXEPATH)
+# $(EXEPATH): $(OBJPATH)
+# 	g++ $(OBJPATH) -o $(EXEPATH)
 
-$(OBJPATH): $(MAINPATH)
-	g++ -c $(MAINPATH) -o $(OBJPATH)
+# $(OBJPATH): $(MAINPATH)
+# 	g++ -c $(MAINPATH) -o $(OBJPATH)
+
+
+
+# $(EXEPATH): $(OBJPATH)
+# 	g++ $(OBJPATH) -o $(EXEPATH)
+
+$(EXEPATH): $(patsubst %, $(MAINPATH)/%, $(notdir $(wildcard $(MAINPATH)/*.cpp)))
+	g++ $^ -o $@
 
 run:
 	./$(EXEPATH)
 
 clean:
-	del $(dir)\\obj\\*.o $(dir)\\exe\\*.exe \\files\\*.txt
+	del $(dir)\\exe\\*.exe .\\files\\*.txt
+
+
+
+# Usage information
+help:
+	@echo "Usage: make DIR=<directory_name>"
+	@echo "Compiles all .c files in the specified directory into a single object file."
 
 #target: dependencies
 #	action
