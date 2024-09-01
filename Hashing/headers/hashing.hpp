@@ -1,5 +1,5 @@
 #pragma once
 
-#include "../headers/Types.h"
+#include "../headers/Types.hpp"
 
 int generateKey(std::string token);

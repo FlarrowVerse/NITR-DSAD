@@ -1,10 +1,11 @@
 #include <iostream>
 
-#include "../headers/Types.h"
-#include "../headers/utils.h"
-#include "../headers/inputGenerator.h"
-#include "../headers/tokenGenerator.h"
-#include "../headers/hashing.h"
+#include "../headers/Types.hpp"
+#include "../headers/utils.hpp"
+#include "../headers/inputGenerator.hpp"
+#include "../headers/tokenGenerator.hpp"
+#include "../headers/hashing.hpp"
+#include "../headers/TokenEntry.hpp"
 
 using std::cin;
 using std::cout;
@@ -15,30 +16,46 @@ using std::stringstream;
 using std::getline;
 using std::ws;
 
+
+/**
+ * Does the initial setup work:
+ * 1. Create sample text file
+ * 2. Extract tokens from file
+ * 3. Stores tokens in separate file
+ */
+void setup(tokenEntryList_t& tokenList) {
+    // list of forbidden characters
+    string filename, fileContent, delimiters = ",. ";
+
+    // input of word count of file
+    int wordCount;
+    cout << "Enter a sample file size in words: ";
+    cin >> wordCount;
+
+    // input of file name
+    cout << "Enter a name for the file to store the data in: ";
+    getline(cin >> ws, filename);
+
+    generateInput(wordCount, filename); // generate a sample input file with random word count and given filename
+
+    fileContent = readFromFile(filename); // reading sample data from file
+
+    // extract tokens
+    extractTokens(fileContent, delimiters, tokenList);
+}
+
 /**
  * Main driver code
  */
 int main() {
 
-    generateInput();
-    
-    string filename, fileContent, delimiters = ",. ";
-    stringList_t tokens;
+    tokenEntryList_t tokens;
 
-    cout << "Enter the sample file name:";
-    
-    getline(cin >> ws, filename); // filename input
-    fileContent = readFromFile(filename); // reading sample data from file
+    setup(tokens); // initial setup steps
 
-    // extract tokens
-    extractTokens(fileContent, delimiters, tokens);
-    string tokenString = "";
-    for (const auto &token : tokens) {
-        cout << generateKey(token) << endl;
-        tokenString += token + "\n";        
+    for (const auto& token: tokens) {
+        cout << token << endl;
     }
-
-    writeToFile(tokenString, "tokensFile.txt");
 
     return 0;
 }

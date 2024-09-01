@@ -4,8 +4,9 @@
 #include <cstdlib>
 #include <time.h>
 
-#include "../headers/Types.h"
-#include "../headers/tokenGenerator.h"
+#include "../headers/Types.hpp"
+#include "../headers/tokenGenerator.hpp"
+#include "../headers/TokenEntry.hpp"
 
 /**
  * All the things we need from std namespace
@@ -30,9 +31,7 @@ string processToken(string token) {
         return token.substr(0, 10); // return just first ten characters
     } else {
         int maxCount = 10-(token.length());
-        for (int i = 0; i < maxCount; i++) {
-            token += '*';
-        }
+        token.append(maxCount, '*');
         return token;
     }
 }
@@ -41,16 +40,15 @@ string processToken(string token) {
  * Given a sample text extract tokens from it based on the forbidden characters
  * Forbidden characters = {, . whitespace}
  */
-void extractTokens(const string &text, const string &delimiters, stringList_t &tokens) {
+void extractTokens(const string &text, const string &delimiters, tokenEntryList_t &tokens) {
     stringstream parser(text); // string stream parser
     string token; // to store individual token
 
     size_t start = 0, end; // pointers to extract a portion of the string
     while ((end = text.find_first_of(delimiters, start)) != string::npos) {
         if (end != start) {
-            // cout << text.substr(start, end-start) << endl;
             // if end and start index is not same, extract everything in between
-            tokens.push_back(processToken(text.substr(start, end-start))); 
+            tokens.push_back(TokenEntry(text.substr(start, end-start))); 
         }
         start = end + 1; // set start as start of next token
     }

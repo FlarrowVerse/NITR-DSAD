@@ -3,8 +3,8 @@
 #include <cstdlib>
 #include <time.h>
 
-#include "../headers/utils.h"
-#include "../headers/inputGenerator.h"
+#include "../headers/utils.hpp"
+#include "../headers/inputGenerator.hpp"
 
 using std::cin;
 using std::cout;
@@ -18,22 +18,12 @@ using std::ws;
 /**
  * Main driver code
  */
-void generateInput() {
+void generateInput(int fileWordSize, string filename) {
     srand(time(0)); // seeding the random number generator with current time stamp
-
-    // input of word count of file
-    int wordCount;
-    cout << "Enter a sample file size in words: ";
-    cin >> wordCount;
-
-    // input of file name
-    string filename;
-    cout << "Enter a name for the file to store the data in: ";
-    getline(cin >> ws, filename);
 
     string fileContent = "";
 
-    while (wordCount--) {
+    while (fileWordSize--) {
         int wordSize = getWordSize(); // fetching a random word size
         fileContent += getWord(wordSize); // fetching a random word based on given word size
     }

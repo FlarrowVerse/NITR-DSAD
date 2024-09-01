@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "../headers/hashing.h"
+#include "../headers/hashing.hpp"
 
 using std::string;
 

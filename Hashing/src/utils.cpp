@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <time.h>
 
-#include "../headers/utils.h"
+#include "../headers/utils.hpp"
 
 using std::cin;
 using std::cout;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.h"
+#include "Types.hpp"
 
 int getASCII(); // random ascii character generator
 int getWordSize(); // random word size generator

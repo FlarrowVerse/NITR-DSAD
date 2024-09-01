@@ -20,6 +20,7 @@ NITR-DSAD/
 |    |----exe/              # stores executables
 |    |----obj/              # stores compiled object files
 |    |----src/              # stores source code files
+|    |----headers/          # stores source code files
 |
 |----Makefile               # common makefile for projects
 ```
