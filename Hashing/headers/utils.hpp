@@ -7,3 +7,4 @@ int getWordSize(); // random word size generator
 std::string getWord(int wordSize); // random word generator
 void writeToFile(std::string filecontent, std::string filename); // writing to file utility
 std::string readFromFile(std::string filename); // readinf from a file
+int generateKey(std::string token);

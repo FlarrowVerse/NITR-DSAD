@@ -19,4 +19,5 @@ typedef std::vector<TokenEntry> tokenEntryList_t;
 /**
  * All aliases
  */
-using DLL_TE_t = DoublyLinkedList<TokenEntry>;
+template <typename T>
+using DLL_t = DoublyLinkedList<T>;

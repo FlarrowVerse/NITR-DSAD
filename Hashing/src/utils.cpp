@@ -89,3 +89,16 @@ string readFromFile(string filename) {
 
     return fileContent;
 }
+
+/**
+ * Key generation from tokens
+ */
+int generateKey(string token) {
+    int asciiSum = 0;
+    for (auto &tokenChar : token) {
+        asciiSum += tokenChar;
+    }
+
+    return asciiSum;
+    
+}

@@ -54,7 +54,8 @@ int main() {
 
     setup(tokens); // initial setup steps
 
-    DLL_TE_t tokenList;
+    DLL_t<TokenEntry> tokenList;
+    DLL_t<TokenEntry> sortedTokenList;
 
     int n;
     cout << "Enter number of tokens you want to parse: ";
@@ -62,9 +63,11 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         tokenList.addNewNode(tokens[i]);
+        sortedTokenList.insertNewNode(tokens[i]);
     }
 
     cout << tokenList << endl;
+    cout << sortedTokenList << endl;
 
     return 0;
 }

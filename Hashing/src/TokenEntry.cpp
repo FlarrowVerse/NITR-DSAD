@@ -1,5 +1,5 @@
 #include "../headers/TokenEntry.hpp"
-#include "../headers/hashing.hpp"
+#include "../headers/utils.hpp"
 #include "../headers/tokenGenerator.hpp"
 
 #include <iostream>
@@ -28,10 +28,6 @@ int TokenEntry::getKey() const {
 /**
  * Setter methods
  */
-void TokenEntry::setToken(string token) {
-    this->token = token;
-}
-
 void TokenEntry::setKey() {
     string processedToken = processToken(this->token);
     this->key = generateKey(processedToken); // store the key based on the token value
@@ -57,10 +53,18 @@ bool operator>(const TokenEntry& left, const TokenEntry& right) {
     return left.key > right.key;
 }
 
+bool operator<(const TokenEntry& left, const TokenEntry& right) {
+    return left.key < right.key;
+}
+
 bool operator<=(const TokenEntry& left, const TokenEntry& right) {
     return left.key <= right.key;
 }
 
+bool operator>=(const TokenEntry& left, const TokenEntry& right) {
+    return left.key >= right.key;
+}
+
 bool operator==(const TokenEntry& left, const TokenEntry& right) {
-    return left.key == right.key;
+    return left.token == right.token;
 }

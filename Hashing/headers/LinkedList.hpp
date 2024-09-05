@@ -103,6 +103,8 @@ public:
             curr = nextNode; // setting the current as the next node in the list
         }
         this->size = 0;
+        this->head = nullptr;
+        this->tail = nullptr;
     }
 
     /**
@@ -176,7 +178,7 @@ public:
         } else if (end->value == value) {
             return std::make_tuple(end, endIdx);
         } else {
-            return std::make_tuple(nullptr, -1);
+            return std::make_tuple(nullptr, startIdx);
         }
     }
 

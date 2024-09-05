@@ -20,7 +20,6 @@ public:
     /**
      * Setter methods
      */
-    void setToken(std::string token);
     void setKey();
 
     /**
@@ -33,6 +32,8 @@ public:
      * For easy comparisons
      */
     friend bool operator>(const TokenEntry& left, const TokenEntry& right);
+    friend bool operator<(const TokenEntry& left, const TokenEntry& right);
     friend bool operator<=(const TokenEntry& left, const TokenEntry& right);
+    friend bool operator>=(const TokenEntry& left, const TokenEntry& right);
     friend bool operator==(const TokenEntry& left, const TokenEntry& right);
 };
