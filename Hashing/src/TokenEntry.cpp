@@ -37,12 +37,30 @@ void TokenEntry::setKey() {
     this->key = generateKey(processedToken); // store the key based on the token value
 }
 
+/**
+ * For easy input output
+ */
 std::ostream& operator<<(std::ostream& os, const TokenEntry& obj) {
-    os << obj.key << " " << obj.token;
+    os << "<" << obj.key << ", " << obj.token << ">";
     return os;
 }
 
 std::istream& operator>>(std::istream& is, TokenEntry& obj) {
     is >> obj.key >> obj.token;
     return is;
+}
+
+/**
+ * For comparisons
+ */
+bool operator>(const TokenEntry& left, const TokenEntry& right) {
+    return left.key > right.key;
+}
+
+bool operator<=(const TokenEntry& left, const TokenEntry& right) {
+    return left.key <= right.key;
+}
+
+bool operator==(const TokenEntry& left, const TokenEntry& right) {
+    return left.key == right.key;
 }

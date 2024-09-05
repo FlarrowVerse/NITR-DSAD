@@ -28,4 +28,11 @@ public:
      */
     friend std::ostream& operator<<(std::ostream& os, const TokenEntry& obj);
     friend std::istream& operator>>(std::istream& is, TokenEntry& obj);
+
+    /**
+     * For easy comparisons
+     */
+    friend bool operator>(const TokenEntry& left, const TokenEntry& right);
+    friend bool operator<=(const TokenEntry& left, const TokenEntry& right);
+    friend bool operator==(const TokenEntry& left, const TokenEntry& right);
 };

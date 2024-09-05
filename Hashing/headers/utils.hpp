@@ -2,7 +2,7 @@
 
 #include "Types.hpp"
 
-int getASCII(); // random ascii character generator
+int getRandom(int start, int range); // random ascii character generator
 int getWordSize(); // random word size generator
 std::string getWord(int wordSize); // random word generator
 void writeToFile(std::string filecontent, std::string filename); // writing to file utility

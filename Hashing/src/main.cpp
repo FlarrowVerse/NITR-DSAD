@@ -6,6 +6,7 @@
 #include "../headers/tokenGenerator.hpp"
 #include "../headers/hashing.hpp"
 #include "../headers/TokenEntry.hpp"
+#include "../headers/LinkedList.hpp"
 
 using std::cin;
 using std::cout;
@@ -25,7 +26,7 @@ using std::ws;
  */
 void setup(tokenEntryList_t& tokenList) {
     // list of forbidden characters
-    string filename, fileContent, delimiters = ",. ";
+    string filename = "sampleInput.txt", fileContent, delimiters = ",. ";
 
     // input of word count of file
     int wordCount;
@@ -33,8 +34,8 @@ void setup(tokenEntryList_t& tokenList) {
     cin >> wordCount;
 
     // input of file name
-    cout << "Enter a name for the file to store the data in: ";
-    getline(cin >> ws, filename);
+    // cout << "Enter a name for the file to store the data in: ";
+    // getline(cin >> ws, filename);
 
     generateInput(wordCount, filename); // generate a sample input file with random word count and given filename
 
@@ -53,9 +54,17 @@ int main() {
 
     setup(tokens); // initial setup steps
 
-    for (const auto& token: tokens) {
-        cout << token << endl;
+    DLL_TE_t tokenList;
+
+    int n;
+    cout << "Enter number of tokens you want to parse: ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        tokenList.addNewNode(tokens[i]);
     }
+
+    cout << tokenList << endl;
 
     return 0;
 }

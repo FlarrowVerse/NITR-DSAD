@@ -17,8 +17,8 @@ using std::ofstream;
  * Returns the ASCII code of a printable character
  * ASCII range = [32, 126]
  */
-int getASCII() {
-    return (rand() % 95) + 32;
+int getRandom(int start, int range) {
+    return (rand() % range) + start;
 }
 
 /**
@@ -34,7 +34,7 @@ int getWordSize() {
 string getWord(int wordSize) {
     string word = "";
     for (int charCount = 0; charCount < wordSize; charCount++) {
-        word += (char)getASCII(); // getting a random ascii code and appending it to the file as string        
+        word += (char)getRandom(32, 95); // getting a random ascii code and appending it to the file as string        
     }
     // randomly deciding to add a forbidden character at the end of a word
     if (rand() % 2) {
