@@ -35,7 +35,7 @@ run:
 	./$(TARGET)
 
 clean:
-	del $(dir)\\obj\\*.o $(dir)\\exe\\*.exe .\\files\\*.txt
+	del $(dir)\\obj\\*.o $(dir)\\exe\\*.exe
 
 
 

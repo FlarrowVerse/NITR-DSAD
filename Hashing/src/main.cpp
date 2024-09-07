@@ -1,6 +1,7 @@
 /* core libs */
 #include <iostream>
 #include <limits>
+#include <algorithm>
 
 /* use defined libs */
 #include "../headers/Types.hpp"
@@ -22,6 +23,7 @@ using std::ifstream;
 using std::stringstream;
 using std::getline;
 using std::ws;
+using std::min;
 
 
 /**
@@ -60,44 +62,51 @@ int main() {
     string methods[4] = {"OHT-Unordered", "OHT-Ordered", "CHT", "BST"};
     string ops[4] = {"Not Found", "Found", "Inserted", "Deleted"};
 
-    size_t probes[sizeof(methods)/sizeof(string)][sizeof(ops)/sizeof(string)];
-    int count[sizeof(ops)/sizeof(string)];
+    size_t probes[4][4];
+    int count[4];
+
+    for (size_t i = 0; i < 4; i++) {
+        for (size_t j = 0; j < 4; j++) {
+            methods[i][j] = 0;
+            count [j] = 0;
+        }        
+    }
 
     // testing loop
     while (++runs) {
         cout << "Starting Testing Loop....." << runs << endl;
+        tokenEntryList_t tokens;
+        setup(tokens); // initial setup steps
 
         // getting random number of methods to test for
         int M[4] = {1, 2, 3, 4}; // methods
         int m = getRandom(10, INT_MAX); // size of ds
-        int n = getRandom(0, INT_MAX); // initial number of insertions
-
-        
-        
+        int n = getRandom(0, min((size_t)m, tokens.size())); // initial number of insertions
         int I = getRandom(0, INT_MAX); // get a random integer
         string operations = radix3(I); // radix-3 representation
 
         cout << m << " " << n << " " << I << " " << operations << endl;
 
-        tokenEntryList_t tokens;
-        setup(tokens); // initial setup steps
+        
 
         cout << "Tokens extracted from file...." << endl;
 
         /**
          * Data structure declarations
          */
-        OHT_t<TokenEntry> unorderedHT(m, false);
+        OHT_t<TokenEntry> unorderedHT(m, false);        
         OHT_t<TokenEntry> orderedHT(m, true);
         CHT_t<TokenEntry> closedHT(m);
         BST_t<TokenEntry> bst;
+        cout << "Empty Data Structures created" << endl;
 
         /**
          * Inserting first n distinct tokens
          * into empty structure
          */
         cout << "Inserting first " << n << " tokens into empty Data structures....." << endl;
-        for (int i = 0; i < n; i++) {            
+        for (int i = 0; i < n; i++) {     
+            cout << "Token: " << tokens[i] << endl;       
             for (int method: M) {
                 switch (method) {
                     case 1: operateOHT(unorderedHT, tokens[i], 1); break;
@@ -112,17 +121,20 @@ int main() {
         int index = n;
 
         // scan rest of the files for performing the corresponding operations
-        for (char c: operations) {
-            int opCode = c - '0'; // operation code {0, 1, 2}
-            size_t probe;
+        for (char c: operations) {            
+            size_t probe = 0;
             bool status;
             for (int method: M) { // perform operation for each method
+                int opCode = c - '0'; // operation code {0, 1, 2}              
+
                 switch (method) {
                     case 1: std::tie(status, probe) = operateOHT(unorderedHT, tokens[index], opCode); break;
                     case 2: std::tie(status, probe) = operateOHT(orderedHT, tokens[index], opCode); break;
                     case 3: std::tie(status, probe) = operateCHT(closedHT, tokens[index], opCode); break;
                     case 4: std::tie(status, probe) = operateBST(bst, tokens[index], opCode); break;
                 }
+
+                cout << "Operation " << opCode << " completed on " << method << endl;
 
                 if (opCode == 0 && !status) opCode = 0;
                 else opCode++;
@@ -137,8 +149,7 @@ int main() {
         cout << "Do you want to take another test run? (Y/N): ";
         string choice;
         getline(cin >> ws, choice);
-
-        if (choice.at(0) != 'y' || choice.at(0) != 'Y') break; // if not yes break loop
+        if (choice.at(0) != 'y' && choice.at(0) != 'Y') break; // if not yes break loop
     }
 
     cout << "\t\t";

@@ -61,7 +61,7 @@ public:
      */
     size_t deleteToken(const T& token) {
         size_t homeAddress = getHash(token.getKey());
-        return this->hashTable[homeAddress].deleteNode(token);        
+        return this->hashTable[homeAddress].deleteNode(token);
     }
 
 };
@@ -93,11 +93,6 @@ public:
      * Probe function - set to linear mode for now
      */
     size_t getProbe(size_t homeAddress, size_t i) {
-        if (i >= this->tableSize) {
-            std::cout << "ERROR: Wrong probe length!!!" << std::endl;
-            return -1;
-        }
-
         return homeAddress + i;
     }
 
@@ -105,16 +100,19 @@ public:
      * Inserts a new token into the hash table
      */
     size_t insertToken(const T& token) {
-        size_t homeAddress = getHash(token.getKey()); // homeAddress
-        size_t i = 0, address = homeAddress;
-        while (i < this->tableSize || this->hashTable[address] != nullptr) {
-            address = getProbe(homeAddress, i++); // get next linear probe
+        size_t homeAddress = getHash(token.getKey()), address = homeAddress; // homeAddress
+        size_t i = 0;
+        
+        while (i < this->tableSize && this->hashTable[address] != nullptr) {            
+            address = getProbe(homeAddress, i); // get next linear probe            
+            i++;
         }
+        
 
-        if (i == this->tableSize) {
+        if (i >= this->tableSize) {
             std::cout << "ERROR: Cannot insert new token. Out of space!" << std::endl;
         } else {
-            this->hashTable[address] = std::make_unique<TokenEntry>(token.getToken());
+            this->hashTable[address] = std::make_unique<TokenEntry>(token);
         }
         return i;
     }
@@ -126,7 +124,7 @@ public:
         size_t homeAddress = getHash(token.getKey()); // homeAddress
         size_t i = 0, address = homeAddress;
         bool found = false;
-        while (i < this->tableSize || this->hashTable[address] != nullptr) {
+        while (i < this->tableSize && this->hashTable[address] != nullptr) {
             if (*(this->hashTable[address]) == token) { // break the loop if token is found
                 found = true;
                 break;
@@ -149,13 +147,17 @@ public:
         size_t homeAddress = getHash(token.getKey()); // homeAddress
         size_t i = 0, address = homeAddress;
         bool found = false;
-        while (i < this->tableSize || this->hashTable[address] != nullptr) {
-            if (*(this->hashTable[address]) == token) { // break the loop if token is found
+        
+        while (i < this->tableSize && this->hashTable[address] != nullptr) {
+            std::cout << "Delete loop" << std::endl;
+            
+            if (*(this->hashTable[address]) == token) { // break the loop if token is found                
                 found = true;
                 break;
             }
             address = getProbe(homeAddress, i++); // get next linear probe            
         }
+        std::cout << (this->hashTable[address] == nullptr) << std::endl;
 
         if (!found) {
             std::cout << "Token not found in hash table." << std::endl;

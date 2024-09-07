@@ -110,25 +110,29 @@ public:
     /**
      * Add a node into the list at the end without sorting
      */
-    size_t addNewNode(T value) {
-        Node<T>* newNode = new Node<T>(value); // create a new node
+    size_t addNewNode(const T& value) {
+        Node<T>* newNode = new Node<T>(value); // create a new node               
 
-        if (!this->head) { // when the list is empty
+        if (this->head == nullptr) { // when the list is empty
+            std::cout << "Null Head" << std::endl;
             this->head = newNode;
-            this->tail = this->head;
+            this->tail = newNode;
         } else {
             this->tail->next = newNode;
             newNode->prev = this->tail;
             this->tail = newNode;
         }
-        this->size = 0;
+
+        std::cout << this->head->value << std::endl;
+        std::cout << this->tail->value << std::endl;
+        this->size++;
         return 0;
     }
 
     /**
      * Insert a node into the list at the correct position by performing insertion sort
      */
-    size_t insertNewNode(T value) {
+    size_t insertNewNode(const T& value) {
         Node<T>* newNode = new Node<T>(value);
         size_t index = 0;
 
@@ -163,35 +167,37 @@ public:
     /**
      * delete a node based on key value
      */
-    std::tuple<Node<T>*, size_t> searchList(T value) {
+    std::tuple<Node<T>*, size_t> searchList(const T& value) {
         Node<T>* start = this->head;
-        Node<T>* end = this->tail; // two pointers
-        int startIdx = 0, endIdx = this->size - 1;
+        int startIdx = 0;
 
         // searching from either side
-        while ((start->prev != end || start != end) && (start->value != value || end->value != value)) {
+        while (start != nullptr && start->value != value) {
             start = start->next; startIdx++;
-            end = end->prev; endIdx--;
         }
 
-        if (start->value == value) {
+        if (start && start->value == value) {
+            std::cout << "Found" << std::endl;
             return std::make_tuple(start, startIdx);
-        } else if (end->value == value) {
-            return std::make_tuple(end, endIdx);
         } else {
+            std::cout << "Not Found" << std::endl;
             return std::make_tuple(nullptr, startIdx);
         }
     }
 
-    size_t deleteNode(T value) {
+    size_t deleteNode(const T& value) {        
         auto [node, index] = searchList(value); // searching and getting the node that contains the value
 
-        if (node) {
+        if (node == this->head) {
+            this->head = nullptr;
+            delete node;
+        } else if (node != nullptr) {            
+            std::cout << (node->prev == nullptr) << std::endl;
             node->prev->next = node->next;
             node->next->prev = node->prev;
             delete node;
-        }
-        this->size--;
+            this->size--;
+        }        
         return index;
     }
 
