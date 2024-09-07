@@ -164,7 +164,8 @@ public:
      * delete a node based on key value
      */
     std::tuple<Node<T>*, size_t> searchList(T value) {
-        Node<T>* start = this->head, end = this->tail; // two pointers
+        Node<T>* start = this->head;
+        Node<T>* end = this->tail; // two pointers
         int startIdx = 0, endIdx = this->size - 1;
 
         // searching from either side

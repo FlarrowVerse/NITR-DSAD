@@ -36,4 +36,5 @@ public:
     friend bool operator<=(const TokenEntry& left, const TokenEntry& right);
     friend bool operator>=(const TokenEntry& left, const TokenEntry& right);
     friend bool operator==(const TokenEntry& left, const TokenEntry& right);
+    friend bool operator!=(const TokenEntry& left, const TokenEntry& right);
 };

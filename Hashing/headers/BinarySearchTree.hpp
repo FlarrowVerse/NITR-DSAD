@@ -7,21 +7,21 @@ template <typename T>
 class BinarySearchTree;
 
 /**
- * Node<left, value, right>
+ * TreeNode<left, value, right>
  * Data for a single node in a BST
  */
 template <typename T>
-class Node {
+class TreeNode {
 private:
     // index int idx; 
     T value; // value of node
     /* pointers */
-    Node<T>* left;
-    Node<T>* right;
-    Node<T>* parent;
+    TreeNode<T>* left;
+    TreeNode<T>* right;
+    TreeNode<T>* parent;
 
 public:
-    Node(const T& value) : value(value), left(nullptr), right(nullptr), parent(nullptr) {} // parameterized constructor
+    TreeNode(const T& value) : value(value), left(nullptr), right(nullptr), parent(nullptr) {} // parameterized constructor
 
     /**
      * Getter
@@ -29,13 +29,13 @@ public:
     T getValue() const {
         return this->value;
     }
-    Node<T>* getLeft() const {
+    TreeNode<T>* getLeft() const {
         return this->left;
     }
-    Node<T>* getRight() const {
+    TreeNode<T>* getRight() const {
         return this->right;
     }
-    Node<T>* getParent() const {
+    TreeNode<T>* getParent() const {
         return this->parent;
     }
 
@@ -45,20 +45,20 @@ public:
     void setValue(const T& value) {
         this->value = value;
     }
-    void setLeft(const Node<T>& leftChild) {
+    void setLeft(const TreeNode<T>& leftChild) {
         this->left = leftChild;
     }
-    void setRight(const Node<T>& rightChild) {
+    void setRight(const TreeNode<T>& rightChild) {
         this->right = rightChild;
     }
-    void setParent(const Node<T>& parent) {
+    void setParent(const TreeNode<T>& parent) {
         this->parent = parent;
     }
 
     /**
      * Easy for printing current node
      */
-    friend std::ostream& operator<<(std::ostream& os, const Node<T>& node) {
+    friend std::ostream& operator<<(std::ostream& os, const TreeNode<T>& node) {
         os << node.value;
         return os;
     }
@@ -73,13 +73,13 @@ public:
     /**
      * Compares two nodes based on value only
      */
-    friend bool operator>=(const Node<T>& left, const Node<T>& right) {
+    friend bool operator>=(const TreeNode<T>& left, const TreeNode<T>& right) {
         return left.getValue() >= right.getValue();
     }
-    friend bool operator<(const Node<T>& left, const Node<T>& right) {
+    friend bool operator<(const TreeNode<T>& left, const TreeNode<T>& right) {
         return left.getValue() < right.getValue();
     }
-    friend bool operator==(const Node<T>& left, const Node<T>& right) {
+    friend bool operator==(const TreeNode<T>& left, const TreeNode<T>& right) {
         return left.getValue() == right.getValue();
     }
     
@@ -97,9 +97,9 @@ public:
 template <typename T>
 class BinarySearchTree {
 private:
-    Node<T>* root;
+    TreeNode<T>* root;
 
-    void deleteTree(Node<T>* node) {
+    void deleteTree(TreeNode<T>* node) {
         if (node) {
             deleteTree(node->left);  // Delete left subtree
             deleteTree(node->right); // Delete right subtree
@@ -113,7 +113,7 @@ public:
     /**
      * Destructor - cleanup for the list
      */
-    ~DoublyLinkedList() {
+    ~BinarySearchTree() {
         deleteTree(this->root);
         this->root = nullptr;
     }    
@@ -121,14 +121,14 @@ public:
     /**
      * Insert a node into the list at the correct position by performing insertion sort
      */
-    size_t insertNewNode(T value) {
-        Node<T>* newNode = new Node<T>(value);
+    size_t insertToken(const T& value) {
+        TreeNode<T>* newNode = new TreeNode<T>(value);
         size_t probes = 0;
 
         if (!this->root) { // empty tree
             this->root = newNode;
         } else {
-            Node<T>* curr = root;
+            TreeNode<T>* curr = root;
             while (curr || curr->left || curr->right) {
                 // check if new node is less than current node
                 if (newNode < curr) {
@@ -159,8 +159,8 @@ public:
     /**
      * search tree for value
      */
-    std::tuple<Node<T>*, size_t> searchTree(T value) {
-        Node<T>* start = this->root; // start from root and traverse
+    std::tuple<TreeNode<T>*, size_t> searchToken(const T& value) {
+        TreeNode<T>* start = this->root; // start from root and traverse
         size_t probes = -1;
 
         while (start) { // traverse until tree ends
@@ -179,8 +179,8 @@ public:
     /**
      * Find the inorder successor of the given node
      */
-    std::tuple<Node<T>*, size_t> getInorderSuccessor(Node<T>* node) {
-        Node<T>* start = node->right; // start from right child of node and traverse
+    std::tuple<TreeNode<T>*, size_t> getInorderSuccessor(TreeNode<T>* node) {
+        TreeNode<T>* start = node->right; // start from right child of node and traverse
         size_t probes = 0;
 
         while (start && start->left) { // traverse until tree ends
@@ -193,8 +193,8 @@ public:
     /**
      * Cleanup the connections
      */
-    void cleanupLinks(Node<T>* node) {
-        Node<T>* parent = node->parent;
+    void cleanupLinks(TreeNode<T>* node) {
+        TreeNode<T>* parent = node->parent;
         if (parent->left == node) {
             parent->left = nullptr;
         } else if (parent->right == node) {
@@ -205,8 +205,8 @@ public:
     /**
      * Delete a value from tree
      */
-    size_t deleteNode(T value) {
-        auto [node, probes] = searchTree(value); // searching and getting the node that contains the value
+    size_t deleteToken(const T& value) {
+        auto [node, probes] = searchToken(value); // searching and getting the node that contains the value
 
         if (node) {
             if (node->isLeaf()) { // if node to be deleted is a leaf
@@ -228,7 +228,7 @@ public:
                     this->root = (node->left)? node->left: node->right;
                 }
                 // other internal node
-                Node<T>* parent = node->parent;
+                TreeNode<T>* parent = node->parent;
                 if (parent->left == node) {
                     parent->left = (node->left)? node->left: node->right;
                 } else if (parent->right == node) {

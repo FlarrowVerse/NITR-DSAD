@@ -102,3 +102,15 @@ int generateKey(string token) {
     return asciiSum;
     
 }
+
+/**
+ * Radix 3 representation of decimal
+ */
+string radix3(int i) {
+    string repr = "";
+    while (i > 0) {
+        repr = std::to_string(i % 3) + repr; // adding the base-3 digit to the front
+        i = i / 3;
+    }
+    return repr;
+}

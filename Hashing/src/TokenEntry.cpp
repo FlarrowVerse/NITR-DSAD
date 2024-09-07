@@ -68,3 +68,7 @@ bool operator>=(const TokenEntry& left, const TokenEntry& right) {
 bool operator==(const TokenEntry& left, const TokenEntry& right) {
     return left.token == right.token;
 }
+
+bool operator!=(const TokenEntry& left, const TokenEntry& right) {
+    return left.token != right.token;
+}
