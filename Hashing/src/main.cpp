@@ -2,6 +2,8 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
+#include <cstring>
+#include <time.h>
 
 /* use defined libs */
 #include "../headers/Types.hpp"
@@ -47,7 +49,12 @@ void generateInputFile() {
  * 3. Stores tokens in separate file
  */
 void setup(tokenEntryList_t& tokenList) {
+    srand(time(0)); // seeding the random number generator with current time stamp
     string filename = "sampleInput.txt", fileContent, delimiters = ",. ";    
+    
+    cout << "Enter the input filename: ";
+    getline(cin >> ws, filename);
+    
     fileContent = readFromFile(filename); // reading sample data from file
     // extract tokens
     extractTokens(fileContent, delimiters, tokenList);
@@ -59,37 +66,33 @@ void setup(tokenEntryList_t& tokenList) {
 int main() {
 
     int runs = 0; // number of runs
-    string methods[4] = {"OHT-Unordered", "OHT-Ordered", "CHT", "BST"};
+    string methods[4] = {"OHT-U", "OHT-O", "CHT-L", "BST-N"};
     string ops[4] = {"Not Found", "Found", "Inserted", "Deleted"};
 
     size_t probes[4][4];
     int count[4];
 
-    for (size_t i = 0; i < 4; i++) {
-        for (size_t j = 0; j < 4; j++) {
-            methods[i][j] = 0;
-            count [j] = 0;
-        }        
-    }
+    memset(probes, 0, sizeof(probes));
+    memset(count, 0, sizeof(count));
 
     // testing loop
     while (++runs) {
-        cout << "Starting Testing Loop....." << runs << endl;
+        cout << endl << "############################################# STARTING TEST LOOP: " << runs << " ########################################" << endl;
         tokenEntryList_t tokens;
         setup(tokens); // initial setup steps
+        cout << "Tokens extracted from file...." << endl;
 
         // getting random number of methods to test for
         int M[4] = {1, 2, 3, 4}; // methods
-        int m = getRandom(10, INT_MAX); // size of ds
+        int m = getRandom(10, 20); // size of ds
         int n = getRandom(0, min((size_t)m, tokens.size())); // initial number of insertions
         int I = getRandom(0, INT_MAX); // get a random integer
         string operations = radix3(I); // radix-3 representation
 
-        cout << m << " " << n << " " << I << " " << operations << endl;
+        cout << "Data Structure Size: " << m << endl; 
+        cout << "Initial Insertions: " << n << endl;
+        cout << "Operations: " << I << "--(radix-3)-->" << operations << endl;     
 
-        
-
-        cout << "Tokens extracted from file...." << endl;
 
         /**
          * Data structure declarations
@@ -98,7 +101,7 @@ int main() {
         OHT_t<TokenEntry> orderedHT(m, true);
         CHT_t<TokenEntry> closedHT(m);
         BST_t<TokenEntry> bst;
-        cout << "Empty Data Structures created" << endl;
+        cout << "Empty Data Structures created...." << endl;
 
         /**
          * Inserting first n distinct tokens
@@ -106,7 +109,6 @@ int main() {
          */
         cout << "Inserting first " << n << " tokens into empty Data structures....." << endl;
         for (int i = 0; i < n; i++) {     
-            cout << "Token: " << tokens[i] << endl;       
             for (int method: M) {
                 switch (method) {
                     case 1: operateOHT(unorderedHT, tokens[i], 1); break;
@@ -114,9 +116,9 @@ int main() {
                     case 3: operateCHT(closedHT, tokens[i], 1); break;
                     case 4: operateBST(bst, tokens[i], 1); break;
                 }
-                cout << "Insertion completed for method number " << method << endl;
             }
         }
+        cout << endl << "==========================INITIAL INSERTIONS COMPLETE=============================================================" << endl;
 
         int index = n;
 
@@ -133,8 +135,7 @@ int main() {
                     case 3: std::tie(status, probe) = operateCHT(closedHT, tokens[index], opCode); break;
                     case 4: std::tie(status, probe) = operateBST(bst, tokens[index], opCode); break;
                 }
-
-                cout << "Operation " << opCode << " completed on " << method << endl;
+                cout << "***********************OPERATION COMPLETE ON SINGLE DS***********************************************************" << endl;
 
                 if (opCode == 0 && !status) opCode = 0;
                 else opCode++;
@@ -143,8 +144,9 @@ int main() {
                 count[opCode]++; // updating operation count
             }
             index++; 
+            cout << "***********************SINGLE OPERATION COMPLETE ON ALL DS***********************************************************" << endl;
         }
-        
+        cout << "---------------------------------------ALL OPERATIONS COMPLETE ON ALL DS-------------------------------------------------" << endl;
 
         cout << "Do you want to take another test run? (Y/N): ";
         string choice;
@@ -152,19 +154,25 @@ int main() {
         if (choice.at(0) != 'y' && choice.at(0) != 'Y') break; // if not yes break loop
     }
 
-    cout << "\t\t";
+    cout << "\n\t\t";
     for (string op: ops) {
-        cout << op << "\t";
+        cout << op << "\t\t";
     }
     cout << endl;
 
     for (int i = 0; i < sizeof(methods)/sizeof(string); i++) {
         cout << methods[i] << "\t\t";
         for (int j = 0; j < sizeof(ops)/sizeof(string); j++) {
-            cout << ((double)probes[i][j]) << "\t";
+           cout << ((double)probes[i][j]/count[j]) << "\t\t\t";
         }
         cout << endl;
     }
+
+    cout << ":::Legends:::" << endl;
+    cout << "OHT-U: Open Hashtable with Unorderd Chaining" << endl;
+    cout << "OHT-O: Open Hashtable with Orderd Chaining" << endl;
+    cout << "CHT-L: Closed Hashtable with Linear Probing" << endl;
+    cout << "BST-N: Binary Search Tree not height balanced" << endl;
 
     return 0;
 }

@@ -20,6 +20,7 @@ private:
     Node<T>* prev;
 
 public:
+    Node() : value(""), next(nullptr), prev(nullptr) {}
     Node(const T& value) : value(value), next(nullptr), prev(nullptr) {} // parameterized constructor
 
     /**
@@ -107,6 +108,10 @@ public:
         this->tail = nullptr;
     }
 
+    bool isEmpty() {
+        return this->size;
+    }
+
     /**
      * Add a node into the list at the end without sorting
      */
@@ -114,7 +119,6 @@ public:
         Node<T>* newNode = new Node<T>(value); // create a new node               
 
         if (this->head == nullptr) { // when the list is empty
-            std::cout << "Null Head" << std::endl;
             this->head = newNode;
             this->tail = newNode;
         } else {
@@ -122,9 +126,6 @@ public:
             newNode->prev = this->tail;
             this->tail = newNode;
         }
-
-        std::cout << this->head->value << std::endl;
-        std::cout << this->tail->value << std::endl;
         this->size++;
         return 0;
     }
@@ -177,10 +178,10 @@ public:
         }
 
         if (start && start->value == value) {
-            std::cout << "Found" << std::endl;
+            std::cout << value << ": FOUND @" << startIdx << std::endl;
             return std::make_tuple(start, startIdx);
         } else {
-            std::cout << "Not Found" << std::endl;
+            std::cout << value << ": NOT FOUND" << std::endl;
             return std::make_tuple(nullptr, startIdx);
         }
     }
@@ -191,13 +192,12 @@ public:
         if (node == this->head) {
             this->head = nullptr;
             delete node;
-        } else if (node != nullptr) {            
-            std::cout << (node->prev == nullptr) << std::endl;
+        } else if (node != nullptr) {
             node->prev->next = node->next;
             node->next->prev = node->prev;
             delete node;
-            this->size--;
         }        
+        this->size--;
         return index;
     }
 

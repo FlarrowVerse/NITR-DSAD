@@ -13,9 +13,13 @@ std::tuple<bool, size_t> operateOHT(OHT_t<TokenEntry>& hashTable, const TokenEnt
     bool success = true;
 
     switch (opCode) {
-        case 0: std::tie(success, probes) = hashTable.searchToken(token); break;
-        case 1: probes = hashTable.insertToken(token); break;
-        case 2: probes = hashTable.deleteToken(token); break;
+        case 0: std::cout << "Searching for " << token << " in Open Hash table " << std::endl << hashTable << std::endl;
+            std::tie(success, probes) = hashTable.searchToken(token); 
+            break;
+        case 1: std::cout << "Inserting " << token << " into Open Hash table " << std::endl << hashTable << std::endl;
+            probes = hashTable.insertToken(token); break;
+        case 2: std::cout << "Deleting " << token << " from Open Hash table " << std::endl << hashTable << std::endl;
+            probes = hashTable.deleteToken(token); break;
     }
     return std::make_tuple(success, probes);
 }
@@ -28,9 +32,12 @@ std::tuple<bool, size_t> operateCHT(CHT_t<TokenEntry>& hashTable, const TokenEnt
     bool success = true;
 
     switch (opCode) {
-        case 0: std::tie(success, probes) = hashTable.searchToken(token); break;
-        case 1: probes = hashTable.insertToken(token); break;
-        case 2: probes = hashTable.deleteToken(token); break;
+        case 0: std::cout << "Searching for " << token << " in Closed Hash table " << std::endl << hashTable << std::endl;
+            std::tie(success, probes) = hashTable.searchToken(token); break;
+        case 1: std::cout << "Inserting " << token << " into Closed Hash table " << std::endl << hashTable << std::endl;
+            probes = hashTable.insertToken(token); break;
+        case 2: std::cout << "Deleting " << token << " from Closed Hash table " << std::endl << hashTable << std::endl;
+            probes = hashTable.deleteToken(token); break;
     }
     return std::make_tuple(success, probes);
 }
@@ -43,11 +50,14 @@ std::tuple<bool, size_t> operateBST(BST_t<TokenEntry>& bst, const TokenEntry& to
     bool success = true;
     TreeNode<TokenEntry>* node;
     switch (opCode) {
-        case 0: std::tie(node, probes) = bst.searchToken(token); 
+        case 0: std::cout << "Searching for " << token << " in Binary Search Tree " << std::endl << bst << std::endl;
+            std::tie(node, probes) = bst.searchToken(token); 
             success = !node;
             break;
-        case 1: probes = bst.insertToken(token); break;
-        case 2: probes = bst.deleteToken(token); break;
+        case 1: std::cout << "Inserting " << token << " into Binary Search Tree " << std::endl << bst << std::endl;
+            probes = bst.insertToken(token); break;
+        case 2: std::cout << "Deleting " << token << " from Binary Search Tree " << std::endl << bst << std::endl;
+            probes = bst.deleteToken(token); break;
     }
 
     return std::make_tuple(success, probes);

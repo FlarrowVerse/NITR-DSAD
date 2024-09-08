@@ -53,6 +53,12 @@ public:
     std::tuple<bool, size_t> searchToken(const T& token) {
         size_t homeAddress = getHash(token.getKey());
         auto [node, probes] = this->hashTable[homeAddress].searchList(token); // searches the chain
+
+        if (node != nullptr) {
+            std::cout << token <<  ": FOUND" << std::endl;
+        } else {
+            std::cout << token <<  ": NOT FOUND" << std::endl;
+        }
         return std::make_tuple(node != nullptr, probes); // returns both true/false and number of probes
     }
 
@@ -60,8 +66,27 @@ public:
      * Searches and deletes a token in the current hash table
      */
     size_t deleteToken(const T& token) {
-        size_t homeAddress = getHash(token.getKey());
+        size_t homeAddress = getHash(token.getKey());        
+        if (this->hashTable[homeAddress].isEmpty()) {
+            return 0;
+        }
         return this->hashTable[homeAddress].deleteNode(token);
+    }
+
+    /**
+     * Easy for printing current node
+     */
+    friend std::ostream& operator<<(std::ostream& os, const OpenHashTables<T>& oht) {
+        std::cout << "Open Hash Table with ";
+        if (oht.orderedChain) {
+            std::cout << " Ordered Chaining::::>" << std::endl;
+        } else {
+            std::cout << " Unordered Chaining::::>" << std::endl;
+        }
+        for (int i = 0; i < oht.tableSize; i++) {
+            std::cout << oht.hashTable[i] << std::endl;
+        }
+        return os;
     }
 
 };
@@ -93,7 +118,7 @@ public:
      * Probe function - set to linear mode for now
      */
     size_t getProbe(size_t homeAddress, size_t i) {
-        return homeAddress + i;
+        return (homeAddress + i) % this->tableSize;
     }
 
     /**
@@ -133,9 +158,10 @@ public:
         }
 
         if (!found) {
-            std::cout << "Token not found in hash table." << std::endl;
+            std::cout << token << ": NOT FOUND" << std::endl;
             return std::make_tuple(false, i);
-        } else {            
+        } else {
+            std::cout << token << ": FOUND" << std::endl;
             return std::make_tuple(true, i);
         }
     }
@@ -149,7 +175,7 @@ public:
         bool found = false;
         
         while (i < this->tableSize && this->hashTable[address] != nullptr) {
-            std::cout << "Delete loop" << std::endl;
+            std::cout << "Checking element " << *(this->hashTable[address]) << std::endl;
             
             if (*(this->hashTable[address]) == token) { // break the loop if token is found                
                 found = true;
@@ -157,14 +183,29 @@ public:
             }
             address = getProbe(homeAddress, i++); // get next linear probe            
         }
-        std::cout << (this->hashTable[address] == nullptr) << std::endl;
 
         if (!found) {
-            std::cout << "Token not found in hash table." << std::endl;
-        } else {            
+            std::cout << token << ": NOT FOUND" << std::endl;
+        } else {
+            std::cout << token << ": FOUND AND DELETED" << std::endl;
             this->hashTable[address].reset();
         }
         return i;
+    }
+
+    /**
+     * Easy for printing current node
+     */
+    friend std::ostream& operator<<(std::ostream& os, const ClosedHashTables<T>& cht) {
+        std::cout << "Closed Hash Table with Linear Probing:::::>" << std::endl;
+        for (int i = 0; i < cht.tableSize; i++) {
+            if ((cht.hashTable[i])) {
+                std::cout << *(cht.hashTable[i]) << std::endl;
+            } else {
+                std::cout << "<EMPTY>" << std::endl;
+            }
+        }
+        return os;
     }
 
 };
