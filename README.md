@@ -4,38 +4,13 @@ All codes related to Data Structures and Algorithm Design class in NIT Rourkela 
 Enjoy!
 
 ## Directory Structure
-The main directory will contain the individual project folders. I will try to include README files in the folders itself describing the project.
+The main directory contains 3 folders: 
 
-There will be for now a single Makefile to compile, run and clean all the projects. Might modify that later.
+- C++
+- Java
+- Python
 
-And common files or generated files will be kept outside the project directories. Working on how to solve this issue.
-
-High-level view of directory structure:
-```
-NITR-DSAD/
-|
-|----files/                 # common files or generated files
-|
-|----<Project-Directory>/   # project folder
-|    |----exe/              # stores executables
-|    |----obj/              # stores compiled object files
-|    |----src/              # stores source code files
-|    |----headers/          # stores source code files
-|
-|----Makefile               # common makefile for projects
-```
+Each folder will contain their respective projects. I will try to describe their directory structures in a separate README included with each folder.
 
 ## Dependencies
-This project will contain C++ codes for now. Will update here if this changes later on. For running codes in this project, C++ compiler, debugger, header files, libraries, etc. will be needed. So based on your operating system install a suitable compiler. Tons of tutorials online.
-
-## Usage Instructions
-Follow the instructions below to run a project in this folder. For now the only one created is Hashing project which only contains one file that generates test data. Lets use that as our example.
-
-1. **Compile File in a Project** 
-``` $ make dir=<project-name> prog=<program-name>```
-
-2. **Run a File in a Project**
-``` $ make dir=<project-name> prog=<program-name> run```
-
-3. **Clean the project**
-``` $ make dir=<project-name> prog=<program-name> clean```
+This project will contain C++, Java and Python codes for now. Will update here if this changes later on. For running codes in this project, JDK, JRE, Python, C++ compiler, debugger, header files, libraries, etc. will be needed. So based on your operating system install a suitable compiler. Tons of tutorials online.
