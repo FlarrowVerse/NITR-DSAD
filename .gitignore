@@ -1,1 +1,18 @@
-.vscode/
+# Ignore target directories
+**/target/
+
+# Ignore .mvn directory and other Maven-related files
+.mvn/
+.mvn/wrapper/
+mvnw
+mvnw.cmd
+
+# Ignore log files
+*.log
+
+# Ignore IDE specific files (if applicable)
+*.idea/
+*.project
+*.classpath
+*.settings/
+*.vscode/
