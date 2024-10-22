@@ -1,13 +1,24 @@
 package com.dsad.music.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.time.Duration;
+import java.util.Comparator;
 
-public class PlaylistManager {
+public class PlaylistManager implements Serializable {
 
     /*---------------------------------PROPERTIES----------------------------------------------------------------- */
+    private static final long serialVersionUID = 1L; // for versioning
+
     private DoublyLinkedList<Song> playlist; // actual playlist
     private Duration totalDuration; // keeping track of total duration
-    private String name, creator, mode; // normal, single-loop, repeat, shuffle, reverse
+    private String name, creator; // normal, single-loop, repeat, shuffle, reverse
+    private Mode mode;
 
     /*---------------------------------FUNCTIONS------------------------------------------------------------------ */
     /**
@@ -20,9 +31,49 @@ public class PlaylistManager {
         this.creator = creator;
         this.playlist = new DoublyLinkedList<>();
         this.totalDuration = Duration.ofSeconds(0);
-        this.mode = "Normal";
+        this.mode = Mode.NORMAL;
     }
-    
+
+    /**
+     * Getter for playlist name
+     * @return playlist name
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Getter for creator
+     * @return creator's name
+     */
+    public String getCreator() {
+        return this.creator;
+    }
+
+    /**
+     * Getter for mode
+     * @return current mode
+     */
+    public Mode getMode() {
+        return this.mode;
+    }
+
+    /**
+     * Setter for name
+     * @param name playlist name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Setter for creator
+     * @param creator playlist creator name
+     */
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
     /**
      * Adding a new song to the playlist
      * @param title
@@ -32,7 +83,8 @@ public class PlaylistManager {
      */
     public void addSong(String title, String artist, String duration, long position) {
         Song newSong = new Song(title, artist, duration); // new song object
-        this.playlist.insert(newSong, position); // adding song to the playlist
+        if (position == -1) this.playlist.insert(newSong, this.playlist.getSize());
+        else this.playlist.insert(newSong, position); // adding song to the playlist
 
         // adding song duration to the total duration
         this.totalDuration = this.totalDuration.plus(Song.parseTimeString(duration));
@@ -49,11 +101,10 @@ public class PlaylistManager {
         boolean result = false;
 
         if (!title.equals("")) { // if title given remove by title first
-            Song song = new Song(title, "", "::"); // just a blank song
             // deleting the song
-            result = this.playlist.deleteNode(song);
+            result = this.playlist.deleteNode(-1, song -> song.getTitle().equals("title"));
         } else if (position >= 1) {
-            result = this.playlist.deleteNode(Long.valueOf(position));
+            result = this.playlist.deleteNode(Long.valueOf(position), null);
         }
 
         System.out.printf("%s %s from %s\n", 
@@ -92,12 +143,12 @@ public class PlaylistManager {
      * Sets a new mode and makes necessary changes
      * @param newMode
      */
-    public void setMode(String newMode) {
+    public void setMode(Mode newMode) {
         this.mode = newMode;
-        if (this.mode.equalsIgnoreCase("reverse")) {
+        if (this.mode == Mode.REVERSE) {
             System.out.println("Reversing the playlist.....");
             this.playlist.reverseList();
-        } else if (this.mode.equalsIgnoreCase("shuffle")) {
+        } else if (this.mode == Mode.SHUFFLE) {
             System.out.println("Shuffling all songs.....");
             reorderAllSongs();
         }
@@ -112,7 +163,7 @@ public class PlaylistManager {
         for (long i = min; i <= max; i++) {
             // find a new random index
             long newIndex = min + (long)(Math.random() * (max - min));
-            this.playlist.moveNode(i, newIndex);
+            this.playlist.moveNode(i, newIndex, null);
         }
     }
 
@@ -123,8 +174,7 @@ public class PlaylistManager {
      */
     public void moveSong(String title, long newPosition) {
         if (newPosition >= 1 && newPosition <= this.playlist.getSize()) {
-            Song song = new Song(title, "", ":");
-            this.playlist.moveNode(song, newPosition);
+            this.playlist.moveNode(-1, newPosition, song -> song.getTitle().equals(title));
 
             System.out.printf("Moved %s to %d in %s\n", title, newPosition, this.name);
         }
@@ -145,6 +195,103 @@ public class PlaylistManager {
             this.name,
             ((index == -1)? ".": "at " + index + ".")
         );
+    }
+
+    /**
+     * Updates a single song
+     * @param position
+     * @param title
+     * @param artist
+     * @param duration
+     */
+    public void updateSong(long position, String title, String artist, String duration) {
+        Song song = this.playlist.getNodeData(position);
+        if (title.length() != 0) {
+            song.setTitle(title);
+        }
+
+        if (artist.length() != 0) {
+            song.setArtist(artist);
+        }
+
+        if (duration.length() != 0) {
+            song.setDuration(duration);
+        }
+    }
+
+    public void sort(boolean byTitle) {
+        Comparator<Song> comparator = null;
+        if (byTitle) {
+            comparator = (Song s1, Song s2) -> s1.getTitle().compareTo(s2.getTitle());
+        } else {
+            comparator = (Song s1, Song s2) -> s1.getArtist().compareTo(s2.getArtist());
+        }
+
+        this.playlist.sort(comparator); // sort the playlist
+    }
+
+    /**
+     * Handles filename fetch
+     * @param filename
+     * @return full path of the playlist file
+     */
+    public static String getFilePath(String filename) {
+        String fullPath = PathConfig.getFullPath(filename);
+        try {
+            PathConfig.ensureDirectoryExists();
+            return fullPath;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    /**
+     * Save the given playlist
+     * @param playlistManager object to be saved
+     * @param basePath resources directory path
+     */
+    public static void savePlaylist(PlaylistManager playlistManager) {
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(getFilePath(playlistManager.getName())))) {
+            oos.writeObject(playlistManager);
+            System.out.println(playlistManager.getName() + " successfully saved to file.");
+        } catch (IOException e) {
+            System.err.println("ERROR: Could not save " + playlistManager.getName());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Load a playlist given its name
+     * @param playlistName playlist to be loaded
+     * @return PlaylistManager object
+     */
+    public static PlaylistManager loadPlaylist(String playlistName) {
+        PlaylistManager manager = null;
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilePath(playlistName)))) {
+            manager = (PlaylistManager) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("ERROR: Could not load " + playlistName);
+            e.printStackTrace();
+        }        
+
+        return manager;
+    }
+
+    /**
+     * Delete a playlist given its name
+     * @param playlistName playlist to be deleted
+     */
+    public static boolean deletePlaylist(String playlistName) {
+        File file = new File(getFilePath(playlistName));
+
+        if (file.exists()) {
+            return file.delete();
+        }
+        System.err.println("File not found!");
+        return false;
     }
 
 }

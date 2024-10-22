@@ -1,6 +1,8 @@
 package com.dsad.music.core;
 
 import java.io.Serializable;
+import java.util.function.Predicate;
+import java.util.Comparator;
 
 public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
 
@@ -59,52 +61,63 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
     }
 
     /**
-     * Adds a data to the end of the list
-     * @param data
+     * Returns the data of a Node
+     * @param position
+     * @return
      */
-    public void add(T data) {
-        Node newNode = new Node(data); // create the node first
-
-        if (tail == null) {
-            // playlist is empty
-            head = newNode;
-            tail = head;
-        } else { // playlist has some songs
-            tail.next = newNode;
-            newNode.prev = tail;
-            tail = tail.next;
-        }
-
-        this.size++; // increase the playlist's size
+    public T getNodeData(long position) {
+        return this.getNode(position).data;
     }
 
     /**
-     * Insert new data in a specific position
+     * Adds a data to the end of the list
+     * @param data
+     */
+    public void append(T data) {
+        Node newNode = new Node(data); // create the node first
+        placeNode(newNode, this.size);
+        this.size++; // increase the list's size
+    }
+
+    /**
+     * Insert data at any other index other than last place
      * @param data
      * @param index
      */
     public void insert(T data, long index) {
-        if (index >= this.size) {
-            // add to the end
-            this.add(data);
-        } else {
-            Node newNode = new Node(data); // create the node
-            
-            if (index == 1) { // enter at the first position
-                this.head.prev = newNode;
-                newNode.next = this.head;
-                this.head = newNode;
-            } else { // somewhere in the middle
-                Node node = getNode(index);
+        Node newNode = new Node(data);
+        placeNode(newNode, index);
+        this.size++; // increase size
+    }
 
-                Node temp = node.prev;
-                // handling next node
-                temp.next.prev = newNode;
-                newNode.next = temp.next;
-                //handling previous node
-                temp.next = newNode;
-                newNode.prev = temp;
-            }
+    /**
+     * Places given data in a specific position
+     * Reusing this code wherever node needs to be inserted
+     * @param data
+     * @param index
+     */
+    public void placeNode(Node node, long index) {
+
+        if (this.head == null) { // handle empty list case first, index not a concern
+            this.head = node;
+            this.tail = node;
+        }else if (index <= 1) { // place at start
+            node.next = this.head;
+            this.head.prev = node;
+            this.head = node; // new head
+        } else if (index >= this.size) { // place at last
+            node.prev = this.tail;
+            this.tail.next = node;
+            this.tail = node; // new tail
+        } else { // place at some place in between two nodes
+            // find the previous node of the required index
+            Node prev = getNode(index-1);
+            // connect node to the prev and its next first
+            node.next = prev.next;
+            node.prev = prev;
+            // connect prev and its next to node next
+            prev.next.prev = node;
+            prev.next = node;
         }
     }
 
@@ -138,12 +151,12 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @param data
      * @return node that was searched
      */
-    public Node search(T data) {
+    public Node search(Predicate<T> predicate) {
         Node front = this.head, back = this.tail;
         boolean found = false;
 
         while (front != null && back != null && front.prev != back) {
-            if (front.data.compareTo(data) == 0 || back.data.compareTo(data) == 0) {
+            if (predicate.test(front.data) || predicate.test(back.data)) {
                 // found the data
                 found = true;
                 break;                
@@ -152,7 +165,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
             back = back.next;
         }
         if (found) {
-            return ((front.data.compareTo(data) == 0)? front: back);
+            return ((predicate.test(front.data))? front: back);
         }
         return null;
     }
@@ -163,6 +176,9 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @return node of the index that was searched
      */
     public Node getNode(long index) {
+        if (index <= 1) return this.head;
+        if (index >= this.size) return this.tail;
+
         Node front = head, back = tail;
         long idxFront = 1, idxBack = this.size;
 
@@ -181,16 +197,17 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @param data index/Song
      * @return true/false
      */
-    @SuppressWarnings("unchecked")
-    public boolean deleteNode(Object data) {
+    public boolean deleteNode(long index, Predicate<T> predicate) {
         Node node = null;
-        if (data instanceof Long && (Long)data >= 1 &&  (Long)data <= this.size) {
-            node = getNode((Long) data); // if searching by index
+        if (predicate == null && index >= 1 &&  index <= this.size) {
+            node = getNode(index); // if searching by index
         } else {
-            node = search((T) data); // if searching by data
+            node = search(predicate); // if searching by data
         }
         if (node == null) return false; // node not found
         removeNode(node);
+
+        this.size--;
         return true;
     }
 
@@ -224,25 +241,36 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
     }
 
     /**
-     * Move a node from one position to another
-     * @param data
+     * Reorder the given node by removing its old connections and placing it at given index
+     * @param node
      * @param index
      */
-    @SuppressWarnings("unchecked")
-    public void moveNode(Object data, long index) {
-        Node node = null;
-        if (data instanceof Long  && (Long)data >= 1 &&  (Long)data <= this.size) {
-            node = getNode((Long)data);
-        } else {
-            node = search((T) data);
-        }
+    public void reorder(Node node, long index) {
+        if (node != null) {
+            // remove node's old connections
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
 
-        // if correct node mentioned, remove it from original place and create
-        if (node != null && index >= 1 && index <= this.size) {
-            T value = node.data;
-            removeNode(node);
-            insert(value, index);
+            placeNode(node, index); // place the node at the correct place
         }
+    }
+
+    /**
+     * Move a node from one position to another
+     * @param src original index -1 if not needed
+     * @param dest target index -1 if not needed
+     */
+    public void moveNode(long src, long dest, Predicate<T> predicate) {
+
+        // getting the actual node we are looking for
+        Node node = null;
+        if (predicate == null && src >= 1 && src <= this.size) {
+            node = getNode(src); // incase searching with index
+        } else {
+            node = search(predicate); // in case searching with data
+        }
+        // handling all the connections
+        reorder(node, dest);
     }
 
     /**
@@ -260,6 +288,47 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
             // moving the pair
             curr = next;
             next = curr.next;
+        }
+    }
+
+    /**
+     * Sorts the list according to the criteria provided
+     * using Insertion sort
+     * @param comparator
+     */
+    public void sort(Comparator<T> comparator) {
+        if (this.head == null) return;
+        Node curr = this.head.next; // current node to be sorted
+        Node lastSorted = this.head, firstSorted = this.head;
+        long lastIdx = 1, firstIdx = 1, currIdx = 2;
+
+        while (curr != null) { // sort all the nodes
+
+            // find the correct place to place the curr node
+            while (comparator.compare(curr.data, firstSorted.data) >= 0 || 
+                comparator.compare(curr.data, lastSorted.data) < 0 && lastSorted != firstSorted) {
+                // as long as curr is smaller than lastSorted and larger than firstSorted
+                firstSorted = firstSorted.next; firstIdx++;
+                lastSorted = lastSorted.prev; lastIdx--;
+            }
+
+            if (comparator.compare(curr.data, firstSorted.data) < 0 && firstIdx != currIdx) {
+                // current is less than the firstSorted
+                reorder(curr, firstIdx);
+            } else if (comparator.compare(curr.data, lastSorted.data) >= 0 && lastIdx != currIdx) {
+                // current is more than lastSorted
+                reorder(curr, lastIdx);
+            }
+
+            // moving to next node
+            currIdx++;            
+            curr = curr.next;
+            // resetting the lastSorted
+            lastIdx = currIdx - 1;
+            lastSorted = curr.prev;
+            // resetting the firstSorted
+            firstIdx = 1;
+            firstSorted = this.head;
         }
     }
 }

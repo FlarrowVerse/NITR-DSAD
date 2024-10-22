@@ -31,9 +31,16 @@ public class Song implements Comparable<Song>, Serializable {
      */
     public static Duration parseTimeString(String timeString) {
         String[] parts = timeString.split(":");
-        long hours = Long.parseLong(parts[0]);
-        long minutes = Long.parseLong(parts[1]);
-        long seconds = Long.parseLong(parts[2]);
+        long hours = 0, minutes = 0, seconds = 0;
+        if (parts.length == 3) {
+            hours = Long.parseLong(parts[0]);
+            minutes = Long.parseLong(parts[1]);
+            seconds = Long.parseLong(parts[2]);
+        } else {
+            minutes = Long.parseLong(parts[0]);
+            seconds = Long.parseLong(parts[1]);
+        }
+        
 
         return Duration.ofSeconds(hours * 3600 + minutes * 60 + seconds);
     }
@@ -64,6 +71,30 @@ public class Song implements Comparable<Song>, Serializable {
      */
     public String getArtist() {
         return this.artist;
+    }
+
+    /**
+     * Setter for duration
+     * @param duration string duration
+     */
+    public void setDuration(String duration) {
+        this.duration = parseTimeString(duration);
+    }
+
+    /**
+     * Setter for title
+     * @param title title of the song
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * Setter for artist
+     * @param artist artist of the song
+     */
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 
     /**
