@@ -58,6 +58,14 @@ public class Song implements Comparable<Song>, Serializable {
     }
 
     /**
+     * Getter for duration
+     * @return duration
+     */
+    public Duration getDuration() {
+        return this.duration;
+    }
+
+    /**
      * Getter for title
      * @return title of the song
      */

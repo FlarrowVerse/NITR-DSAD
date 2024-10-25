@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.time.Duration;
 import java.util.Comparator;
 
+
 public class PlaylistManager implements Serializable {
 
     /*---------------------------------PROPERTIES----------------------------------------------------------------- */
@@ -98,17 +99,19 @@ public class PlaylistManager implements Serializable {
      * @param position
      */
     public void removeSong(String title, long position) {
-        boolean result = false;
+        Song result = null;
 
         if (!title.equals("")) { // if title given remove by title first
             // deleting the song
-            result = this.playlist.deleteNode(-1, song -> song.getTitle().equals("title"));
+            result = this.playlist.deleteNode(-1, song -> song.getTitle().equals(title));
         } else if (position >= 1) {
             result = this.playlist.deleteNode(Long.valueOf(position), null);
         }
 
+        this.totalDuration = (result == null)? this.totalDuration: this.totalDuration.minus(result.getDuration());
+
         System.out.printf("%s %s from %s\n", 
-            ((result)? "Deleted": "Could not delete"),
+            ((result != null)? "Deleted": "Could not delete"),
             ((title.equals("")? "song number " + position: title)),
             this.name
         );
@@ -186,14 +189,13 @@ public class PlaylistManager implements Serializable {
      * @param artist
      */
     public void searchSong(String title, String artist) {
-        Song song = new Song(title, artist, ":");
-        long index = this.playlist.indexOf(song);
+        long index = this.playlist.indexOf(song -> song.getTitle().equalsIgnoreCase(title) || song.getArtist().equalsIgnoreCase(artist));
 
         System.out.printf("%s %s in %s%s\n",
             ((index == -1)? "Not found": "Found"),
-            song,
+            (title.length() == 0)? artist: title,
             this.name,
-            ((index == -1)? ".": "at " + index + ".")
+            ((index == -1)? ".": " at " + index + ".")
         );
     }
 

@@ -1,10 +1,10 @@
-package com.dsad.music.core;
+package com.dsad.browser.core;
 
 import java.io.Serializable;
 import java.util.function.Predicate;
 import java.util.Comparator;
 
-public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
+public class DoublyLinkedList<T> implements Serializable {
 
     /*---------------------------------PROPERTIES----------------------------------------------------------------- */
     private static final long serialVersionUID = 1L; // for versioning
@@ -40,7 +40,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
 
     // instance members
     private long size;
-    private Node head, tail;
+    private Node head, tail, current;
 
     /*---------------------------------FUNCTIONS------------------------------------------------------------------ */
     /**
@@ -50,6 +50,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
         this.size = 0;
         this.head = null;
         this.tail = null;
+        this.current = null;
     }
 
     /**
@@ -70,6 +71,32 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
     }
 
     /**
+     * Returns the data of a current Node
+     * @return current node's data
+     */
+    public T getCurrentNode() {
+        return this.current.data;
+    }
+
+    /**
+     * Moves the current pointer back one step
+     */
+    public void moveBack() {
+        if (this.current.prev != null) {
+            this.current = this.current.prev;
+        }
+    }
+
+    /**
+     * Moves the current pointer forward one step
+     */
+    public void moveForward() {
+        if (this.current.next != null) {
+            this.current = this.current.next;
+        }
+    }
+
+    /**
      * Adds a data to the end of the list
      * @param data
      */
@@ -86,6 +113,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      */
     public void insert(T data, long index) {
         Node newNode = new Node(data);
+        this.current = newNode; // sets the node inserted as the current node
         placeNode(newNode, index);
         this.size++; // increase size
     }
@@ -197,18 +225,18 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @param data index/Song
      * @return true/false
      */
-    public T deleteNode(long index, Predicate<T> predicate) {
+    public boolean deleteNode(long index, Predicate<T> predicate) {
         Node node = null;
         if (predicate == null && index >= 1 &&  index <= this.size) {
             node = getNode(index); // if searching by index
         } else {
             node = search(predicate); // if searching by data
         }
-        if (node == null) return null; // node not found
+        if (node == null) return false; // node not found
         removeNode(node);
 
         this.size--;
-        return node.data;
+        return true;
     }
 
     /**
@@ -230,11 +258,11 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
         StringBuilder s = new StringBuilder();
 
         long index = 1; // position
-        Node curr = this.head;
+        Node curr = this.current;
         while (curr != null) {
             s.append(index).append(") ").append(curr).append("\n"); // <index>) <data>
             index++;
-            curr = curr.next;
+            curr = curr.prev;
         }
 
         return s.toString();

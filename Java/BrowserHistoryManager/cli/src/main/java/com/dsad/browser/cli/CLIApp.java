@@ -1,15 +1,18 @@
-package com.dsad.music.cli;
+package com.dsad.browser.cli;
 
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-import com.dsad.music.core.Mode;
-import com.dsad.music.core.PlaylistManager;
+import com.dsad.browser.core.Navigation;
+import com.dsad.browser.core.BrowserHistory;
 
 public class CLIApp {
 
     /*---------------------------------PROPERTIES----------------------------------------------------------------- */
     private Scanner sc; // for input
-    private PlaylistManager manager;
+    private BrowserHistory manager;
 
     /*---------------------------------FUNCTIONS------------------------------------------------------------------ */
     /**
@@ -18,19 +21,19 @@ public class CLIApp {
      */
     public CLIApp(Scanner sc) {
         this.sc = sc;
-        this.manager = null; // no playlist loaded
+        this.manager = new BrowserHistory(); // no history loaded
     }
 
     /**
-     * Saves current playlist
+     * Saves current history
      */
-    private void savePlaylist() {
-        if (this.manager == null) System.out.println("No playlist to save!");
+    private void saveHistory() {
+        if (this.manager == null) System.out.println("No history to save!");
         else {
-            System.out.print("Do you want to save the last current playlist?(Y/N)");
+            System.out.print("Do you want to save the last current history?(Y/N)");
             if ("yY".indexOf(this.sc.nextLine().charAt(0)) != -1) {
-                PlaylistManager.savePlaylist(this.manager);
-                System.out.printf("Saved playlist %s....\n", this.manager.getName());
+                BrowserHistory.saveHistory(this.manager);
+                System.out.printf("Saved history %s....\n", this.manager.getDate());
             }
         }
     }
@@ -71,8 +74,8 @@ public class CLIApp {
                 default: back = true;
                     break;
             }
-            System.out.println("\n");
         }
+        this.start();
     }
 
     public void changeMode() {
@@ -103,7 +106,6 @@ public class CLIApp {
             System.out.println("\t2. Remove Song");
             System.out.println("\t3. Edit Song");
             System.out.println("\t4. Change Order");
-            System.out.println("\t5. Search for song");
             System.out.println("\t0. Go to Playlist Menu");
     
             System.out.print("Enter your choice: ");
@@ -152,22 +154,13 @@ public class CLIApp {
                     position = this.sc.nextLong(); this.sc.nextLine();
                     this.manager.moveSong(title, position);
                     break;
-                case 5: System.out.print("Do you want to search by song title?(Y/N):");
-                    if ("yY".indexOf(this.sc.nextLine().charAt(0)) != -1) {
-                        System.out.println("Enter song title: ");
-                        title = sc.nextLine();
-                    } else {
-                        System.out.println("Enter artist name: ");
-                        artist = sc.nextLine();
-                    }
-                    this.manager.searchSong(title, artist);
-                    break;
                 case 0: 
                 default: back = true;
                     break;
             }
-            System.out.println("\n");
         }
+
+        this.editPlaylist();
     }
 
     /**
@@ -175,57 +168,68 @@ public class CLIApp {
      * @return
      */
     public boolean mainMenu() {
-        System.out.println("\n\n=================================MUSIC PLAYLIST MANAGER - COMMAND LINE INTERFACE=================================\n\n");
-        System.out.print("SHOWING PLAYLIST: ");
+        System.out.println("\n-------------------\nMAIN MENU\n-------------------\n");
+        System.out.print("Current Page: ");
         if (this.manager == null) {
-            System.out.println("No playlist loaded.");
+            System.out.println("<---NEW TAB--->.");
         } else {
-            System.out.println(this.manager);
+            System.out.println(this.manager.getCurrentPage());
         }
-        
-        System.out.println("PLAYLIST OPTIONS: ");
-        System.out.println("-----------------");
-        System.out.println("\t1. Create New Playlist");
-        System.out.println("\t2. Delete Playlist");
-        System.out.println("\t3. Edit Playlist");
-        System.out.println("\t4. Load Playlist");
-        System.out.println("\t5. Save Playlist\n");
+
+        System.out.println("\t1. Visit new Page");
+        System.out.println("\t2. Go Back");
+        System.out.println("\t3. Go Forward");
+        System.out.println("\t4. Undo Navigation");
+        System.out.println("\t5. Redo Navigation");
+        System.out.println("\t6. View History");
+        System.out.println("\t7. Search History");
+        System.out.println("\t8. Load Page");
+        System.out.println("\t9. Remove Page");
+        System.out.println("\t10. Clear History");
+        System.out.println("\t11. Bookmark Current Page");
+        System.out.println("\t12. Load Saved History");
+        System.out.println("\t13. Save Currrent History\n");
         System.out.println("\t0. Exit");
 
         System.out.print("Enter your choice: ");
         int option = this.sc.nextInt(); this.sc.nextLine();
 
-        String name = "", creator = ""; // strings that might be needed
+        String url = "", title = ""; // strings that might be needed
+        List<String> tags = new ArrayList<>();
 
         switch (option) {
-            case 1: this.savePlaylist(); // saves current playlist based on user's choice
-                System.out.print("Enter new playlist name: ");
-                name = sc.nextLine();
-                System.out.print("Enter new playlist's creator's name: ");
-                creator = sc.nextLine();
-                this.manager = new PlaylistManager(name, creator); // new playlist creator
+            case 1: System.out.print("Enter the page URL:"); url = sc.nextLine(); // getting the url
+                System.out.print("Enter the page title:"); title = sc.nextLine(); // getting the title
+
+                // all the tags
+                System.out.print("Enter the tags associated (space separated):"); 
+                tags.addAll(Arrays.asList(sc.nextLine().split(" ")));
+
+                this.manager.visitNewPage(url, title, tags, false);
                 break;
-            case 2: System.out.print("Enter the name of the playlist to be deleted: ");
-                name = sc.nextLine();
-                if (!PlaylistManager.deletePlaylist(name)) {
-                    System.err.println("Could not delete the playlist you mentioned.");
-                } else {
-                    System.out.println("Delete playlist " + name);
-                }
+            case 2: this.manager.goBack();
                 break;
-            case 3:
-                this.editPlaylist();
+            case 3: this.manager.goForward();
                 break;
-            case 4: savePlaylist();
-                System.out.print("Enter the name of the playlist to be loaded: ");
-                name = sc.nextLine();
-                PlaylistManager temp = PlaylistManager.loadPlaylist(name);
-                if (temp == null) {
-                    System.err.println("Could not load the playlist you mentioned.");
-                }
-                this.manager = (temp != null)? temp: this.manager; // if loaded set it as current playlist
+            case 4: 
                 break;
-            case 5: savePlaylist();
+            case 5: 
+                break;
+            case 6: 
+                break;
+            case 7: 
+                break;
+            case 8:
+                break;
+            case 9: 
+                break;
+            case 10: 
+                break;
+            case 11: 
+                break;
+            case 12: 
+                break;
+            case 13: 
                 break;
             case 0:
             default: System.err.println("Exiting....");
@@ -240,10 +244,9 @@ public class CLIApp {
      */
     public void start() {
         boolean run = true;
-
+        System.out.println("\n\n=================================BROWSER HISTORY MANAGER - COMMAND LINE INTERFACE=================================\n\n");
         while (run) {
             run = mainMenu();
-            System.out.println("\n");
         }
     }
 }
