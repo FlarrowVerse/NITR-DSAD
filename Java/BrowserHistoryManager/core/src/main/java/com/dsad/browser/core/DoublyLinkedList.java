@@ -33,7 +33,7 @@ public class DoublyLinkedList<T> implements Serializable {
          */
         @Override
         public String toString() {
-            return String.format("%s", data);
+            return String.format("%s", this.data.toString());
         }
         
     }
@@ -75,7 +75,7 @@ public class DoublyLinkedList<T> implements Serializable {
      * @return current node's data
      */
     public T getCurrentNode() {
-        return this.current.data;
+        return (this.current == null)? null: this.current.data;
     }
 
     /**
@@ -103,6 +103,7 @@ public class DoublyLinkedList<T> implements Serializable {
     public void append(T data) {
         Node newNode = new Node(data); // create the node first
         placeNode(newNode, this.size);
+        this.current = newNode; // setting the current node as the last one placed
         this.size++; // increase the list's size
     }
 
@@ -113,8 +114,8 @@ public class DoublyLinkedList<T> implements Serializable {
      */
     public void insert(T data, long index) {
         Node newNode = new Node(data);
-        this.current = newNode; // sets the node inserted as the current node
         placeNode(newNode, index);
+        this.current = newNode; // sets the node inserted as the current node
         this.size++; // increase size
     }
 
@@ -126,10 +127,10 @@ public class DoublyLinkedList<T> implements Serializable {
      */
     public void placeNode(Node node, long index) {
 
-        if (this.head == null) { // handle empty list case first, index not a concern
+        if (this.head == null && this.tail == null) { // handle empty list case first, index not a concern
             this.head = node;
             this.tail = node;
-        }else if (index <= 1) { // place at start
+        }else if (index < 1) { // place at start
             node.next = this.head;
             this.head.prev = node;
             this.head = node; // new head
@@ -160,13 +161,14 @@ public class DoublyLinkedList<T> implements Serializable {
         boolean found = false;
 
         while (front != null && back != null && front.prev != back) {
+            
             if (predicate.test(front.data) || predicate.test(back.data)) {
                 // found the data
                 found = true;
                 break;                
             }
             front = front.next; frontIdx++;
-            back = back.next; backIdx--;
+            back = back.prev; backIdx--;
         }
         if (found) {
             return ((predicate.test(front.data))? frontIdx: backIdx);
@@ -190,7 +192,7 @@ public class DoublyLinkedList<T> implements Serializable {
                 break;                
             }
             front = front.next;
-            back = back.next;
+            back = back.prev;
         }
         if (found) {
             return ((predicate.test(front.data))? front: back);
@@ -233,6 +235,10 @@ public class DoublyLinkedList<T> implements Serializable {
             node = search(predicate); // if searching by data
         }
         if (node == null) return false; // node not found
+        else if (this.current == node) {
+            // if current node is being removed, shift current pointer
+            this.current = (node.prev != null)? node.prev: node.next;
+        }
         removeNode(node);
 
         this.size--;
@@ -257,11 +263,11 @@ public class DoublyLinkedList<T> implements Serializable {
     public String toString() {
         StringBuilder s = new StringBuilder();
 
-        long index = 1; // position
+        long index = this.size; // position
         Node curr = this.current;
         while (curr != null) {
-            s.append(index).append(") ").append(curr).append("\n"); // <index>) <data>
-            index++;
+            s.append(index).append(") ").append(curr.toString()).append("\n"); // <index>) <data>
+            index--;
             curr = curr.prev;
         }
 
@@ -274,13 +280,20 @@ public class DoublyLinkedList<T> implements Serializable {
      * @param index
      */
     public void reorder(Node node, long index) {
-        if (node != null) {
+        if (node != null && node.prev == null) { // first node
+            node.next.prev = null;
+            this.head = node.next;
+            node.next = null;
+        } else if (node != null && node.next == null) { // last node
+            node.prev.next = null;
+            this.tail = node.prev;
+            node.prev = null;
+        } else { // middle node
             // remove node's old connections
             node.prev.next = node.next;
             node.next.prev = node.prev;
-
-            placeNode(node, index); // place the node at the correct place
         }
+        if (node != null) placeNode(node, index); // place the node at the correct place
     }
 
     /**
@@ -298,6 +311,11 @@ public class DoublyLinkedList<T> implements Serializable {
             node = search(predicate); // in case searching with data
         }
         // handling all the connections
+        if (dest < 1) {
+            dest = 1; // resetting to 1
+        } else if (dest > this.size) {
+            dest = this.size; // resetting to last position
+        }
         reorder(node, dest);
     }
 
@@ -358,5 +376,39 @@ public class DoublyLinkedList<T> implements Serializable {
             firstIdx = 1;
             firstSorted = this.head;
         }
+    }
+
+    /**
+     * Sets the current to the node pointed by the params
+     * @param predicate to test the data
+     * @param index
+     * @return true/false
+     */
+    public boolean setCurrent(Predicate<T> predicate, long index) {
+        Node query = null;
+        if (index != -1) {
+            query = this.getNode(index);
+        } else {
+            query = this.search(predicate); // if setting by condition
+        }
+
+        if (query == null) return false;
+        else {
+            this.current = query;
+            return true;
+        }
+    }
+
+    /**
+     * Clears the list
+     */
+    public void clear() {
+        Node curr = this.head;
+        while (curr != null) {
+            Node next = curr.next;
+            curr.prev = null; curr.next = null;
+            curr = next;            
+        }
+        this.head = null; this.tail = null;
     }
 }

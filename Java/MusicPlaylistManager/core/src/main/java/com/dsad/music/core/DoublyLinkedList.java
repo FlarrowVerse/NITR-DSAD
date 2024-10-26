@@ -246,13 +246,20 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @param index
      */
     public void reorder(Node node, long index) {
-        if (node != null) {
+        if (node != null && node.prev == null) { // first node
+            node.next.prev = null;
+            this.head = node.next;
+            node.next = null;
+        } else if (node != null && node.next == null) { // last node
+            node.prev.next = null;
+            this.tail = node.prev;
+            node.prev = null;
+        } else { // middle node
             // remove node's old connections
             node.prev.next = node.next;
             node.next.prev = node.prev;
-
-            placeNode(node, index); // place the node at the correct place
         }
+        if (node != null) placeNode(node, index); // place the node at the correct place
     }
 
     /**

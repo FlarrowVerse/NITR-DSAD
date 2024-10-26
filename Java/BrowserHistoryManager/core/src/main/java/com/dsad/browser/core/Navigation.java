@@ -4,7 +4,8 @@ public enum Navigation {
     NEWPAGE,
     BACK,
     FORWARD,
-    BOOKMARK;
+    BOOKMARK,
+    NONE;
 
     /**
      * Mapping from integer values to Navigation variables
@@ -22,7 +23,7 @@ public enum Navigation {
             case 4:
                 return BOOKMARK;
             default:
-                throw new IllegalArgumentException("Invalid mode value: " + navValue);
+                return NONE;
         }
     }
 
@@ -33,7 +34,7 @@ public enum Navigation {
             case FORWARD:
                 return BACK;
             default:
-                throw new IllegalArgumentException("No reverse: " + nav);
+                return NONE;
         }
     }
 }
