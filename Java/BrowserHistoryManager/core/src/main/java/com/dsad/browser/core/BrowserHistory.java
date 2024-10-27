@@ -301,8 +301,12 @@ public class BrowserHistory {
      * adding the current page to bookmarks list
      */
     public void bookmarkCurrentPage() {
-        bookmarks.add(this.history.getCurrentNode()); // adding the current page to bookmarks
-        this.history.getCurrentNode().setBookmark(true);
+        if (this.history.getCurrentNode() != null) {
+            bookmarks.add(this.history.getCurrentNode()); // adding the current page to bookmarks
+            this.history.getCurrentNode().setBookmark(true);
+        } else {
+            System.err.println("Cannot bookmark a blank page!");
+        }
     }
 
     /**

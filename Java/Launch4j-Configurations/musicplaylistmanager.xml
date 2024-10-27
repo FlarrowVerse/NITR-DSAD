@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>console</headerType>
+  <jar>D:\ARCHISMAN\NITRourkela\DataStructuresAndAlgorithmDesign\Projects\NITR-DSAD\Java\MusicPlaylistManager\driver\target\driver-1.0-SNAPSHOT-fat.jar</jar>
+  <outfile>D:\ARCHISMAN\NITRourkela\DataStructuresAndAlgorithmDesign\Projects\NITR-DSAD\Java\Executables\MusicPlaylistManager.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon></icon>
+  <jre>
+    <path>D:\ARCHISMAN\NITRourkela\DataStructuresAndAlgorithmDesign\Projects\NITR-DSAD\Java\Executables\jre</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion>21</minVersion>
+    <maxVersion></maxVersion>
+  </jre>
+</launch4jConfig>

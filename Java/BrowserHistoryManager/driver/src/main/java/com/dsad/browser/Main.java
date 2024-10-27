@@ -13,7 +13,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        System.out.println(":::::::::::::::::::::::::MUSIC PLAYLIST MANAGER:::::::::::::::::::::::::\n\n");
+        System.out.println(":::::::::::::::::::::::::BROWSER HISTORY MANAGER:::::::::::::::::::::::::\n\n");
 
         System.out.println("Which one do you want to use?");
         System.out.println("\t1. Command Line Interface");

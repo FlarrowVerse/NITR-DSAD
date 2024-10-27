@@ -16,3 +16,6 @@ mvnw.cmd
 *.classpath
 *.settings/
 *.vscode/
+
+#Ignore jre
+**/jre/**
