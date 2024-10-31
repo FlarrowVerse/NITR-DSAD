@@ -3,6 +3,7 @@ package com.dsad.music;
 import java.util.Scanner;
 
 import com.dsad.music.cli.CLIApp;
+import com.dsad.music.gui.GUIApp;
 
 public class Main {
     
@@ -27,7 +28,7 @@ public class Main {
             case 1: CLIApp app = new CLIApp(sc);
                 app.start();
                 break;
-            case 2: // GUI
+            case 2: GUIApp.main(args);// GUI
                 break;
             case 0: System.out.println("Exiting....");
                 break;

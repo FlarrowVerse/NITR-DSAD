@@ -1,0 +1,24 @@
+.label-text {
+    -fx-font-style: italic;
+}
+
+.content-text {
+    -fx-font-weight: bold;
+}
+
+.now-playing-box {
+    -fx-border-color: black;
+    -fx-border-width: 2;
+    -fx-border-style: solid;
+    -fx-padding: 20 20 10 20;
+}
+
+.header-label {
+    -fx-font-weight: bold;
+    -fx-padding: 0 10 0 10;
+    -fx-background-color: lightgrey;
+    -fx-translate-y: -10;
+    -fx-border-color: black;
+    -fx-border-width: 0 1 0 1;
+}
+

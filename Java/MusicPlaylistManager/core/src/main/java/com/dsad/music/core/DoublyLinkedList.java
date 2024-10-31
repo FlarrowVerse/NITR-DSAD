@@ -131,6 +131,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @param data
      * @param index
      */
+    @SuppressWarnings("exports")
     public void placeNode(Node node, long index) {
 
         if (this.head == null) { // handle empty list case first, index not a concern
@@ -174,7 +175,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
                 break;                
             }
             front = front.next; frontIdx++;
-            back = back.next; backIdx--;
+            back = back.prev; backIdx--;
         }
         if (found) {
             return ((predicate.test(front.data))? frontIdx: backIdx);
@@ -187,6 +188,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @param data
      * @return node that was searched
      */
+    @SuppressWarnings("exports")
     public Node search(Predicate<T> predicate) {
         // if the current node matches the criteria, no need to search the entire list
         if (this.current != null && predicate.test(this.current.data)) {
@@ -203,7 +205,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
                 break;                
             }
             front = front.next;
-            back = back.next;
+            back = back.prev;
         }
         if (found) {
             return ((predicate.test(front.data))? front: back);
@@ -216,6 +218,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @param index
      * @return node of the index that was searched
      */
+    @SuppressWarnings("exports")
     public Node getNode(long index) {
         if (index <= 1) return this.head;
         if (index >= this.size) return this.tail;
@@ -260,6 +263,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * Given a node removes it from the list by de-linking
      * @param node
      */
+    @SuppressWarnings("exports")
     public void removeNode(Node node) {
         // remove it
         Node prev = node.prev;
@@ -290,6 +294,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @param node
      * @param index
      */
+    @SuppressWarnings("exports")
     public void reorder(Node node, long index) {
         if (node != null && node.prev == null) { // first node
             node.next.prev = null;

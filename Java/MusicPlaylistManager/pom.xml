@@ -17,6 +17,14 @@
         <module>driver</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21</version>
+        </dependency>
+    </dependencies>
+
     <!-- Properties for versions of plugins and JDK -->
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

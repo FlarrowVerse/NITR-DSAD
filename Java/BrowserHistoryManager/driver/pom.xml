@@ -36,6 +36,16 @@
             <artifactId>gui</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+	<dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>21</version> <!-- Use the JavaFX version that matches your SDK -->
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>21</version>
+        </dependency>
     </dependencies>
 
     <build>

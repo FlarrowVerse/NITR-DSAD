@@ -60,12 +60,28 @@ public class PlaylistManager implements Serializable {
     }
 
     /**
+     * Getter for total duration
+     * @return Duration object
+     */
+    public Duration getTotalDuration() {
+        return this.totalDuration;
+    }
+
+    /**
      * Get the current song in the playlist
      * @return current song as string
      */
     public String getCurrentSong() {
         Song currentSong = this.playlist.getCurrentNode();
         return (currentSong == null)? "": currentSong.toString();
+    }
+
+    /**
+     * Get the current song in the playlist
+     * @return current song
+     */
+    public Song getCurrentSongData() {
+        return this.playlist.getCurrentNode();
     }
 
     /**
