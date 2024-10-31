@@ -16,8 +16,8 @@
   <icon></icon>
   <jre>
     <path>D:\ARCHISMAN\NITRourkela\DataStructuresAndAlgorithmDesign\Projects\NITR-DSAD\Java\Executables\jre</path>
-    <requiresJdk>false</requiresJdk>
-    <requires64Bit>false</requires64Bit>
+    <requiresJdk>true</requiresJdk>
+    <requires64Bit>true</requires64Bit>
     <minVersion>21</minVersion>
     <maxVersion></maxVersion>
   </jre>
