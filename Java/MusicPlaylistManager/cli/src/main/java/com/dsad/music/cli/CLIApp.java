@@ -78,9 +78,9 @@ public class CLIApp {
     public void changeMode() {
         System.out.println("Choose one of the modes: "); 
         System.out.println("\t1. Normal");
-        System.out.println("\t2. Single-loop");
+        System.out.println("\t2. Shuffle");
         System.out.println("\t3. Repeat");
-        System.out.println("\t4. Shuffle");
+        System.out.println("\t4. Single Loop");
         System.out.println("\t5. Reverse");
 
         System.out.println("Enter your choice: ");
@@ -181,6 +181,7 @@ public class CLIApp {
             System.out.println("No playlist loaded.");
         } else {
             System.out.println(this.manager);
+            showCurrentSong();
         }
         
         System.out.println("PLAYLIST OPTIONS: ");
@@ -190,6 +191,12 @@ public class CLIApp {
         System.out.println("\t3. Edit Playlist");
         System.out.println("\t4. Load Playlist");
         System.out.println("\t5. Save Playlist\n");
+
+        System.out.println("PLAYER OPTIONS: ");
+        System.out.println("-----------------");
+        System.out.println("\t6. Go to next song");
+        System.out.println("\t7. Go to previous song\n");
+
         System.out.println("\t0. Exit");
 
         System.out.print("Enter your choice: ");
@@ -227,12 +234,37 @@ public class CLIApp {
                 break;
             case 5: savePlaylist();
                 break;
+            case 6: this.manager.goForward(); // move to next song
+                break;
+            case 7: this.manager.goBack(); // move to previous song
+                break;
             case 0:
             default: System.err.println("Exiting....");
                 return false;
         }
 
         return true;
+    }
+
+    private void showCurrentSong() {
+        String songData = this.manager.getCurrentSong().toString();
+        int songLength = (songData.length() == 0)? "NO SONG PLAYING".length(): songData.length();        
+        int boxWidth = Math.max(songLength + 4, "NOW PLAYING".length() + 4);
+        int headerPad = (boxWidth - "NOW PLAYING".length()) / 2;
+        int contentPad = ((boxWidth - songLength) / 2) - 1;
+        
+        // Create the top border with "NOW PLAYING" at the start
+        String topBorder = "*".repeat(headerPad) + "NOW PLAYING" + "*".repeat(headerPad);
+
+        String content = "*" + " ".repeat(contentPad) + ((songData.length() == 0) ? "NO SONG PLAYING" : songData)
+                + " ".repeat(contentPad) + "*";
+
+        // Create the bottom border and print the message inside the box
+        String bottomBorder = "*".repeat(boxWidth);
+        
+        System.out.println(topBorder);
+        System.out.println(content);
+        System.out.println(bottomBorder);
     }
 
     /**

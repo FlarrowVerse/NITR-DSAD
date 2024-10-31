@@ -40,7 +40,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
 
     // instance members
     private long size;
-    private Node head, tail;
+    private Node head, tail, current;
 
     /*---------------------------------FUNCTIONS------------------------------------------------------------------ */
     /**
@@ -50,6 +50,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
         this.size = 0;
         this.head = null;
         this.tail = null;
+        this.current = null;
     }
 
     /**
@@ -70,12 +71,45 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
     }
 
     /**
+     * Returns the data of the current node's data
+     * @return data
+     */
+    public T getCurrentNode() {
+        return (this.current == null)? null: this.current.data;
+    }
+
+    /**
+     * moves the current node back based on whether the list is circular or not
+     * @param circular true/false
+     */
+    public void moveBack(boolean circular) {
+        if (this.current.prev == null && circular) {
+            this.current = this.tail; // move the current pointer to the 
+        } else if (this.current.prev != null) {
+            this.current = this.current.prev;
+        }
+    }
+
+    /**
+     * moves the current node forward based on whether the list is circular or not
+     * @param circular true/false
+     */
+    public void moveForward(boolean circular) {
+        if (this.current.next == null && circular) {
+            this.current = this.head;
+        } else if (this.current.next != null) {
+            this.current = this.current.next;
+        }
+    }
+
+    /**
      * Adds a data to the end of the list
      * @param data
      */
     public void append(T data) {
         Node newNode = new Node(data); // create the node first
         placeNode(newNode, this.size);
+        // not assigning the newly added song as the current
         this.size++; // increase the list's size
     }
 
@@ -87,6 +121,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
     public void insert(T data, long index) {
         Node newNode = new Node(data);
         placeNode(newNode, index);
+        // not assigning the newly added song as the current
         this.size++; // increase size
     }
 
@@ -101,6 +136,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
         if (this.head == null) { // handle empty list case first, index not a concern
             this.head = node;
             this.tail = node;
+            this.current = node;
         }else if (index <= 1) { // place at start
             node.next = this.head;
             this.head.prev = node;
@@ -152,6 +188,11 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * @return node that was searched
      */
     public Node search(Predicate<T> predicate) {
+        // if the current node matches the criteria, no need to search the entire list
+        if (this.current != null && predicate.test(this.current.data)) {
+            return this.current;
+        }
+
         Node front = this.head, back = this.tail;
         boolean found = false;
 
@@ -205,6 +246,10 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
             node = search(predicate); // if searching by data
         }
         if (node == null) return null; // node not found
+        else if (this.current == node) {
+            // if current node is being removed, shift current pointer
+            this.current = (node.prev != null)? node.prev: node.next;
+        }
         removeNode(node);
 
         this.size--;
@@ -277,6 +322,12 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
             node = search(predicate); // in case searching with data
         }
         // handling all the connections
+        if (dest < 1) {
+            dest = 1; // resetting to 1
+        } else if (dest > this.size) {
+            dest = this.size; // resetting to last position
+        }
+        // handling all the connections
         reorder(node, dest);
     }
 
@@ -284,9 +335,10 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
      * reversing the whole list
      */
     public void reverseList() {
+        if (this.head == null || this.tail == null || this.head.next == null || this.tail.prev == null) return;
         Node curr = head, next = head.next;
 
-        while (curr != tail) {
+        while (curr != null) {
             // swapping the current node's pointers
             Node temp = curr.prev;
             curr.prev = next;
@@ -294,8 +346,14 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
 
             // moving the pair
             curr = next;
-            next = curr.next;
+            next = (next == null)? null: next.next;
         }
+        // swapping the head and tail pointers
+        Node temp = this.head;
+        this.head = this.tail;
+        this.tail = temp;
+
+        this.current = this.head; // changing the current to the current head
     }
 
     /**
@@ -337,5 +395,39 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
             firstIdx = 1;
             firstSorted = this.head;
         }
+    }
+
+    /**
+     * Sets the current to the node pointed by the params
+     * @param predicate to test the data
+     * @param index
+     * @return true/false
+     */
+    public boolean setCurrent(Predicate<T> predicate, long index) {
+        Node query = null;
+        if (index != -1) {
+            query = this.getNode(index);
+        } else {
+            query = this.search(predicate); // if setting by condition
+        }
+
+        if (query == null) return false;
+        else {
+            this.current = query;
+            return true;
+        }
+    }
+
+    /**
+     * Clears the list
+     */
+    public void clear() {
+        Node curr = this.head;
+        while (curr != null) {
+            Node next = curr.next;
+            curr.prev = null; curr.next = null;
+            curr = next;            
+        }
+        this.head = null; this.tail = null;
     }
 }

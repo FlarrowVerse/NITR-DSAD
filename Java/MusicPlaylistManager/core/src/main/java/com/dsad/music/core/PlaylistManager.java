@@ -60,6 +60,34 @@ public class PlaylistManager implements Serializable {
     }
 
     /**
+     * Get the current song in the playlist
+     * @return current song as string
+     */
+    public String getCurrentSong() {
+        Song currentSong = this.playlist.getCurrentNode();
+        return (currentSong == null)? "": currentSong.toString();
+    }
+
+    /**
+     * Moves back the current pointer in the linked list
+     */
+    public void goBack() {
+        if (this.mode == Mode.SOLOLOOP) return; // if on a single loop do not change the song
+        this.playlist.moveBack(this.mode == Mode.REPEAT);
+        this.playlist.getCurrentNode();
+    }
+
+    /**
+     * Moves forward the current pointer in the linked list
+     */
+    public void goForward() {
+        if (this.mode == Mode.SOLOLOOP) return; // if on a single loop do not change the song
+        this.playlist.moveForward(this.mode == Mode.REPEAT);
+        this.playlist.getCurrentNode();
+    }
+
+
+    /**
      * Setter for name
      * @param name playlist name
      */
@@ -274,6 +302,7 @@ public class PlaylistManager implements Serializable {
 
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(getFilePath(playlistName)))) {
             manager = (PlaylistManager) ois.readObject();
+            manager.playlist.setCurrent(null, 1); // setting the first song as the current
         } catch (IOException | ClassNotFoundException e) {
             System.err.println("ERROR: Could not load " + playlistName);
             e.printStackTrace();

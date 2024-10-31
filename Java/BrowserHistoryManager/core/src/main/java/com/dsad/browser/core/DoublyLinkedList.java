@@ -182,6 +182,11 @@ public class DoublyLinkedList<T> implements Serializable {
      * @return node that was searched
      */
     public Node search(Predicate<T> predicate) {
+	// if the current node matches the criteria, no need to search the entire list
+        if (this.current != null && predicate.test(this.current.data)) {
+            return this.current;
+        }
+
         Node front = this.head, back = this.tail;
         boolean found = false;
 
