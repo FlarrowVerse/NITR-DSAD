@@ -3,6 +3,7 @@ package com.dsad.browser.core;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
@@ -31,7 +32,7 @@ public class Page implements Serializable {
      */
     public Page(String url, String title, List<String> tags, boolean isBookmarked) {
         try {
-            this.url = new URL(url); // initiate the URL
+            this.url = URI.create(url).toURL(); // initiate the URL
         } catch (MalformedURLException e) {
             System.err.println("The URL you provided is malformed");
             e.printStackTrace();

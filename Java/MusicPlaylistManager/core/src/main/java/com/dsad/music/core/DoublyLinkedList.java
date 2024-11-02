@@ -74,7 +74,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
 
     /**
      * Returns the data of all Nodes
-     * @return List of all songs
+     * @return List of all node data
      */
     public List<T> getAllNodeData() {
         List<T> allData = new ArrayList<>();
@@ -411,7 +411,6 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
 
             curr = nextCurr;
         }
-        System.out.println(curr == null);
     }
 
     /**

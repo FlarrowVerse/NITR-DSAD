@@ -2,7 +2,9 @@ package com.dsad.browser.core;
 
 import java.io.Serializable;
 import java.util.function.Predicate;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 
 public class DoublyLinkedList<T> implements Serializable {
 
@@ -71,6 +73,21 @@ public class DoublyLinkedList<T> implements Serializable {
     }
 
     /**
+     * Returns the data of all Nodes
+     * @return List of all node data
+     */
+    public List<T> getAllNodeData() {
+        List<T> allData = new ArrayList<>();
+
+        Node curr = this.head;
+        while (curr != null) {
+            allData.add(curr.data);
+            curr = curr.next;
+        }
+        return allData;
+    }
+
+    /**
      * Returns the data of a current Node
      * @return current node's data
      */
@@ -102,8 +119,8 @@ public class DoublyLinkedList<T> implements Serializable {
      */
     public void append(T data) {
         Node newNode = new Node(data); // create the node first
-        placeNode(newNode, this.size);
-        this.current = newNode; // setting the current node as the last one placed
+        placeNode(newNode, (this.size == 1)? 2: this.size);
+        // not assigning the newly added song as the current
         this.size++; // increase the list's size
     }
 
@@ -130,7 +147,7 @@ public class DoublyLinkedList<T> implements Serializable {
         if (this.head == null && this.tail == null) { // handle empty list case first, index not a concern
             this.head = node;
             this.tail = node;
-        }else if (index < 1) { // place at start
+        }else if (index <= 1) { // place at start
             node.next = this.head;
             this.head.prev = node;
             this.head = node; // new head
@@ -232,14 +249,14 @@ public class DoublyLinkedList<T> implements Serializable {
      * @param data index/Song
      * @return true/false
      */
-    public boolean deleteNode(long index, Predicate<T> predicate) {
+    public T deleteNode(long index, Predicate<T> predicate) {
         Node node = null;
         if (predicate == null && index >= 1 &&  index <= this.size) {
             node = getNode(index); // if searching by index
         } else {
             node = search(predicate); // if searching by data
         }
-        if (node == null) return false; // node not found
+        if (node == null) return null; // node not found
         else if (this.current == node) {
             // if current node is being removed, shift current pointer
             this.current = (node.prev != null)? node.prev: node.next;
@@ -247,7 +264,7 @@ public class DoublyLinkedList<T> implements Serializable {
         removeNode(node);
 
         this.size--;
-        return true;
+        return node.data;
     }
 
     /**
@@ -255,10 +272,19 @@ public class DoublyLinkedList<T> implements Serializable {
      * @param node
      */
     public void removeNode(Node node) {
-        // remove it
-        Node prev = node.prev;
-        prev.next = node.next;
-        node.next.prev = prev;        
+        if (node == this.head) { // first node
+            this.head = this.head.next;
+            this.head.prev = null;
+            node.next = null;
+        } else if (node == this.tail) { // last node
+            this.tail = this.tail.prev;
+            this.tail.next = null;
+            node.prev = null;
+        } else { // middle node
+            Node prev = node.prev;
+            prev.next = node.next;
+            node.next.prev = prev;        
+        }   
     }
 
     /**
@@ -328,9 +354,10 @@ public class DoublyLinkedList<T> implements Serializable {
      * reversing the whole list
      */
     public void reverseList() {
+        if (this.head == null || this.tail == null || this.head.next == null || this.tail.prev == null) return;
         Node curr = head, next = head.next;
 
-        while (curr != tail) {
+        while (curr != null) {
             // swapping the current node's pointers
             Node temp = curr.prev;
             curr.prev = next;
@@ -338,8 +365,14 @@ public class DoublyLinkedList<T> implements Serializable {
 
             // moving the pair
             curr = next;
-            next = curr.next;
+            next = (next == null)? null: next.next;
         }
+        // swapping the head and tail pointers
+        Node temp = this.head;
+        this.head = this.tail;
+        this.tail = temp;
+
+        this.current = this.head; // changing the current to the current head
     }
 
     /**
@@ -349,37 +382,22 @@ public class DoublyLinkedList<T> implements Serializable {
      */
     public void sort(Comparator<T> comparator) {
         if (this.head == null) return;
-        Node curr = this.head.next; // current node to be sorted
-        Node lastSorted = this.head, firstSorted = this.head;
-        long lastIdx = 1, firstIdx = 1, currIdx = 2;
+        Node curr = this.head.next; // current node to be sorted       
 
         while (curr != null) { // sort all the nodes
+            Node nextCurr = curr.next;
+            Node position = this.head;
+            long index = 1;
 
-            // find the correct place to place the curr node
-            while (comparator.compare(curr.data, firstSorted.data) >= 0 || 
-                comparator.compare(curr.data, lastSorted.data) < 0 && lastSorted != firstSorted) {
-                // as long as curr is smaller than lastSorted and larger than firstSorted
-                firstSorted = firstSorted.next; firstIdx++;
-                lastSorted = lastSorted.prev; lastIdx--;
+            while (position != curr && comparator.compare(curr.data, position.data) > 0) {
+                position = position.next; index++;
             }
 
-            if (comparator.compare(curr.data, firstSorted.data) < 0 && firstIdx != currIdx) {
-                // current is less than the firstSorted
-                reorder(curr, firstIdx);
-            } else if (comparator.compare(curr.data, lastSorted.data) >= 0 && lastIdx != currIdx) {
-                // current is more than lastSorted
-                reorder(curr, lastIdx);
+            if (position != curr) {
+                reorder(curr, index);
             }
 
-            // moving to next node
-            currIdx++;            
-            curr = curr.next;
-            // resetting the lastSorted
-            lastIdx = currIdx - 1;
-            lastSorted = curr.prev;
-            // resetting the firstSorted
-            firstIdx = 1;
-            firstSorted = this.head;
+            curr = nextCurr;
         }
     }
 
