@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.Comparator;
+import java.util.List;
 
 
 public class PlaylistManager implements Serializable {
@@ -85,6 +86,15 @@ public class PlaylistManager implements Serializable {
     }
 
     /**
+     * Get all the songs as a list
+     * @return list of Song objects
+     */
+    public List<Song> getAllSongs() {
+        List<Song> songs = this.playlist.getAllNodeData();
+        return songs;
+    }
+
+    /**
      * Moves back the current pointer in the linked list
      */
     public void goBack() {
@@ -148,7 +158,7 @@ public class PlaylistManager implements Serializable {
         if (!title.equals("")) { // if title given remove by title first
             // deleting the song
             result = this.playlist.deleteNode(-1, song -> song.getTitle().equals(title));
-        } else if (position >= 1) {
+        } else if (position >= 1 && position <= this.playlist.getSize()) {
             result = this.playlist.deleteNode(Long.valueOf(position), null);
         }
 
@@ -219,11 +229,13 @@ public class PlaylistManager implements Serializable {
      * @param title
      * @param newPosition
      */
-    public void moveSong(String title, long newPosition) {
-        if (newPosition >= 1 && newPosition <= this.playlist.getSize()) {
+    public boolean moveSong(String title, long newPosition) {
+        if (title.isEmpty() || (newPosition >= 1 && newPosition <= this.playlist.getSize())) {
             this.playlist.moveNode(-1, newPosition, song -> song.getTitle().equals(title));
-
             System.out.printf("Moved %s to %d in %s\n", title, newPosition, this.name);
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -232,7 +244,11 @@ public class PlaylistManager implements Serializable {
      * @param title
      * @param artist
      */
-    public void searchSong(String title, String artist) {
+    public long searchSong(String title, String artist) {
+        if (title.isEmpty() && artist.isEmpty()) {
+            return -1;
+        }
+
         long index = this.playlist.indexOf(song -> song.getTitle().equalsIgnoreCase(title) || song.getArtist().equalsIgnoreCase(artist));
 
         System.out.printf("%s %s in %s%s\n",
@@ -241,6 +257,8 @@ public class PlaylistManager implements Serializable {
             this.name,
             ((index == -1)? ".": " at " + index + ".")
         );
+
+        return index;
     }
 
     /**
@@ -249,20 +267,28 @@ public class PlaylistManager implements Serializable {
      * @param title
      * @param artist
      * @param duration
+     * @return true/false
      */
-    public void updateSong(long position, String title, String artist, String duration) {
+    public boolean updateSong(long position, String title, String artist, String duration) {
+        if (position == -1 && title.isEmpty() && artist.isEmpty() && duration.isEmpty()) {
+            return false;
+        }
+        
         Song song = this.playlist.getNodeData(position);
-        if (title.length() != 0) {
+        if (!title.isEmpty()) {
             song.setTitle(title);
         }
 
-        if (artist.length() != 0) {
+        if (!artist.isEmpty()) {
             song.setArtist(artist);
         }
 
-        if (duration.length() != 0) {
+        if (!duration.isEmpty()) {
+            Duration prevDuration = song.getDuration();
             song.setDuration(duration);
+            this.totalDuration = this.totalDuration.minus(prevDuration).plus(song.getDuration()); // update the totalDuration
         }
+        return true;
     }
 
     public void sort(boolean byTitle) {
@@ -297,14 +323,16 @@ public class PlaylistManager implements Serializable {
      * @param playlistManager object to be saved
      * @param basePath resources directory path
      */
-    public static void savePlaylist(PlaylistManager playlistManager) {
+    public static boolean savePlaylist(PlaylistManager playlistManager) {
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(getFilePath(playlistManager.getName())))) {
             oos.writeObject(playlistManager);
             System.out.println(playlistManager.getName() + " successfully saved to file.");
+            return true;
         } catch (IOException e) {
             System.err.println("ERROR: Could not save " + playlistManager.getName());
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -338,6 +366,19 @@ public class PlaylistManager implements Serializable {
             return file.delete();
         }
         System.err.println("File not found!");
+        return false;
+    }
+
+    /**
+     * Removes all songs from the current playlist
+     * @return
+     */
+    public boolean clear() {
+        if (this.playlist != null) {
+            this.playlist.clear();
+            this.totalDuration = Duration.ofSeconds(0);
+            return true;
+        }
         return false;
     }
 

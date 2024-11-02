@@ -4,5 +4,6 @@ module com.dsad.music.driver {
     requires com.dsad.music.core;
     requires javafx.controls;  // JavaFX for GUI
     requires transitive javafx.graphics;
+    requires javafx.base;
     exports com.dsad.music;
 }

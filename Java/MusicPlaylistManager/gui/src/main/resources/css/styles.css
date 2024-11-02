@@ -6,19 +6,28 @@
     -fx-font-weight: bold;
 }
 
-.now-playing-box {
+.section-box {
     -fx-border-color: black;
-    -fx-border-width: 2;
+    -fx-border-width: 1;
     -fx-border-style: solid;
     -fx-padding: 20 20 10 20;
+    -fx-spacing: 10;
+    -fx-alignment: center;
 }
 
 .header-label {
     -fx-font-weight: bold;
-    -fx-padding: 0 10 0 10;
     -fx-background-color: lightgrey;
-    -fx-translate-y: -10;
+    -fx-padding: 0 10 0 10;
+}
+
+.main-box {
+    -fx-spacing: 20;
+}
+
+.table-view {
     -fx-border-color: black;
-    -fx-border-width: 0 1 0 1;
+    -fx-border-width: 2px;
+    -fx-font-size: 14px;
 }
 

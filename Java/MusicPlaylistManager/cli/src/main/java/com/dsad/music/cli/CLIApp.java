@@ -48,6 +48,8 @@ public class CLIApp {
             System.out.println("\t2. Update Creator Name");
             System.out.println("\t3. Change Mode");
             System.out.println("\t4. Edit Songs");
+            System.out.println("\t5. Clear Playlist");
+            System.out.println("\t6. Sort Playlist");
             System.out.println("\t0. Return to Main Menu");
     
             System.out.print("Enter your choice: ");
@@ -67,6 +69,10 @@ public class CLIApp {
                 case 3: this.changeMode();
                     break;
                 case 4: this.editSongs(); break;
+                case 5: this.manager.clear(); break;
+                case 6: System.out.print("Do you want to sort by title? (Y=title/N=artist): ");
+                    this.manager.sort("yY".indexOf(sc.nextLine()) != -1);
+                    break;
                 case 0:
                 default: back = true;
                     break;
@@ -109,7 +115,7 @@ public class CLIApp {
             System.out.print("Enter your choice: ");
             int option = this.sc.nextInt(); this.sc.nextLine();
     
-            String title = "", artist = "", duration = ""; // strings that might be needed
+            String title = "", artist = "", duration = "", line = ""; // strings that might be needed
             long position = -1;
     
             switch (option) {
@@ -126,40 +132,32 @@ public class CLIApp {
                     }
                     this.manager.addSong(title, artist, duration, position);
                     break;
-                case 2: System.out.print("Do you want to remove by song title?(Y/N):");
-                    if ("yY".indexOf(this.sc.nextLine().charAt(0)) != -1) {
-                        System.out.println("Enter song title: ");
-                        title = sc.nextLine();
-                    } else {
-                        System.out.println("Enter song position: ");
-                        position = sc.nextLong(); this.sc.nextLine();
-                    }
+                case 2: System.out.println("Enter song title (default ''): ");
+                    title = sc.nextLine();
+                    System.out.println("Enter song position (default -1): ");
+                    line = sc.nextLine(); position = (line.isEmpty()) ? -1 : Long.parseLong(line);
                     this.manager.removeSong(title, position);
                     break;
-                case 3: System.out.println("Enter song position: ");
-                    position = sc.nextLong(); this.sc.nextLine();
-                    System.out.print("Enter song title: ");
+                case 3: System.out.println("Enter song position (default -1): ");
+                    line = sc.nextLine(); position = (line.isEmpty()) ? -1 : Long.parseLong(line);
+                    System.out.print("Enter song title (default ''): ");
                     title = sc.nextLine();
-                    System.out.print("Enter song artist name: ");
+                    System.out.print("Enter song artist name (default ''): ");
                     artist = sc.nextLine();
-                    System.out.print("Enter song duration: ");
+                    System.out.print("Enter song duration (default ''): ");
                     duration = sc.nextLine();
                     this.manager.updateSong(position, title, artist, duration);
                     break;
-                case 4: System.out.print("Enter song title: ");
+                case 4: System.out.print("Enter song title (default ''): ");
                     title = this.sc.nextLine();
-                    System.out.print("Enter new position for the song: ");
-                    position = this.sc.nextLong(); this.sc.nextLine();
+                    System.out.print("Enter new position for the song (default -1): ");
+                    line = sc.nextLine(); position = (line.isEmpty()) ? -1 : Long.parseLong(line);
                     this.manager.moveSong(title, position);
                     break;
-                case 5: System.out.print("Do you want to search by song title?(Y/N):");
-                    if ("yY".indexOf(this.sc.nextLine().charAt(0)) != -1) {
-                        System.out.println("Enter song title: ");
-                        title = sc.nextLine();
-                    } else {
-                        System.out.println("Enter artist name: ");
-                        artist = sc.nextLine();
-                    }
+                case 5: System.out.println("Enter song title (default ''): ");
+                    title = sc.nextLine();
+                    System.out.println("Enter artist name (default ''): ");
+                    artist = sc.nextLine();
                     this.manager.searchSong(title, artist);
                     break;
                 case 0: 

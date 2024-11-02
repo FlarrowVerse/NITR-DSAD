@@ -28,4 +28,26 @@ public enum Mode {
                 throw new IllegalArgumentException("Invalid mode value: " + modeValue);
         }
     }
+
+    /**
+     * Prints the string value
+     * @param mode
+     * @return
+     */
+    public static String toString(Mode mode) {
+        switch (mode) {
+            case NORMAL:
+                return "Normal";
+            case SHUFFLE:
+                return "Shuffle";
+            case REPEAT:
+                return "Repeat";
+            case SOLOLOOP:
+                return "Single Loop";
+            case REVERSE:
+                return "Reverse";
+            default:
+                throw new IllegalArgumentException("Invalid mode value: " + mode);
+        }
+    }
 }
