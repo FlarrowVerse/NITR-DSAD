@@ -120,7 +120,7 @@ public class DoublyLinkedList<T> implements Serializable {
     public void append(T data) {
         Node newNode = new Node(data); // create the node first
         placeNode(newNode, (this.size == 1)? 2: this.size);
-        // not assigning the newly added song as the current
+        this.current = newNode; // sets the node inserted as the current node
         this.size++; // increase the list's size
     }
 
@@ -151,7 +151,7 @@ public class DoublyLinkedList<T> implements Serializable {
             node.next = this.head;
             this.head.prev = node;
             this.head = node; // new head
-        } else if (index >= this.size) { // place at last
+        } else if (index > this.size) { // place at last
             node.prev = this.tail;
             this.tail.next = node;
             this.tail = node; // new tail

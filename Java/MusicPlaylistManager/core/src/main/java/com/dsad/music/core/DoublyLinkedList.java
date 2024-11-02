@@ -155,7 +155,7 @@ public class DoublyLinkedList<T extends Comparable<T>> implements Serializable {
             this.head = node;
             this.tail = node;
             this.current = node;
-        }else if (index <= 1) { // place at start
+        }else if (index < 1) { // place at start
             node.next = this.head;
             this.head.prev = node;
             this.head = node; // new head

@@ -118,7 +118,7 @@ public class CLIApp {
     public boolean mainMenu() {
         System.out.println("\n-------------------\nMAIN MENU\n-------------------\n");
         System.out.print("Current Page: ");
-        if (this.manager == null) {
+        if (this.manager.getCurrentPage().isEmpty()) {
             System.out.println("<---NEW TAB--->.");
         } else {
             System.out.println(this.manager.getCurrentPage());
